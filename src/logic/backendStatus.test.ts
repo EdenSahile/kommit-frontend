@@ -11,7 +11,9 @@ function throwingFetch(error: Error) {
 
 describe("checkServer", () => {
   it("returns ok with a latency when the server responds 200", async () => {
-    const result = await checkServer("http://localhost:3000", fakeFetch({ ok: true, status: 200 }))
+    const fetchImpl = fakeFetch({ ok: true, status: 200 })
+    const result = await checkServer("http://localhost:3000", fetchImpl)
+    expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/")
     expect(result.ok).toBe(true)
     if (result.ok) {
       expect(typeof result.latencyMs).toBe("number")
@@ -32,7 +34,9 @@ describe("checkServer", () => {
 
 describe("checkDb", () => {
   it("returns ok with a latency when db-health responds 200", async () => {
-    const result = await checkDb("http://localhost:3000", fakeFetch({ ok: true, status: 200 }))
+    const fetchImpl = fakeFetch({ ok: true, status: 200 })
+    const result = await checkDb("http://localhost:3000", fetchImpl)
+    expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/db-health")
     expect(result.ok).toBe(true)
     if (result.ok) {
       expect(typeof result.latencyMs).toBe("number")
