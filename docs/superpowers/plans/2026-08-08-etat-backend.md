@@ -6,7 +6,7 @@
 
 **Architecture:** Vite + React + TypeScript SPA, no router yet (one page). TanStack Query drives the two checks as mutations; the fetch + result-formatting logic is pure and lives in `src/logic/`, tested with Vitest. shadcn/ui (Base UI flavor) supplies Button, Card, and Toast.
 
-**Tech Stack:** Vite, React 19, TypeScript, Tailwind CSS v4, shadcn/ui (Base UI), TanStack Query, Vitest, pnpm.
+**Tech Stack:** Vite, React 18, TypeScript, Tailwind CSS v4, shadcn/ui (Base UI), TanStack Query, Vitest, pnpm.
 
 ## Global Constraints
 
