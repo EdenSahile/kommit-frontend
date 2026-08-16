@@ -1,4 +1,6 @@
+import { LogOutIcon } from 'lucide-react'
 import Navbar from '@/components/ui/Navbar'
+import AuthNavButton from '@/components/ui/AuthNavButton'
 import Footer from '@/components/ui/Footer'
 
 type HomePageProps = {
@@ -14,7 +16,27 @@ export default function HomePage({
 }: HomePageProps) {
   return (
     <div className="flex min-h-screen flex-col items-center bg-kommit-bg">
-      <Navbar isAuthenticated={isAuthenticated} onSignOut={onSignOut} />
+      <Navbar>
+        {isAuthenticated ? (
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-base font-semibold text-kommit-grey-blue"
+          >
+            <LogOutIcon className="size-6" />
+            Se déconnecter
+          </button>
+        ) : (
+          <>
+            <AuthNavButton to="/signin" variant="secondary">
+              Se connecter
+            </AuthNavButton>
+            <AuthNavButton to="/signup" variant="primary">
+              Créer un compte
+            </AuthNavButton>
+          </>
+        )}
+      </Navbar>
 
       <section className="flex w-full flex-col items-center px-[200px] py-8">
         <div className="flex flex-col items-center gap-3 py-7 text-center">

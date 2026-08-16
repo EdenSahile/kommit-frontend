@@ -59,6 +59,9 @@
     --color-kommit-success-bg: var(--kommit-success-bg);
     --color-kommit-success-border: var(--kommit-success-border);
     --color-kommit-success-text: var(--kommit-success-text);
+    --color-kommit-input-bg: var(--kommit-input-bg);
+    --color-kommit-input-border: var(--kommit-input-border);
+    --color-kommit-placeholder: var(--kommit-placeholder);
 }
 
 :root {
