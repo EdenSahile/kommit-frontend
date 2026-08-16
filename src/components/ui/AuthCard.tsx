@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Card, CardTitle } from '@/components/ui/card'
 import SecurityNotice from '@/components/ui/SecurityNotice'
 
 type AuthCardProps = {
@@ -19,8 +20,10 @@ export default function AuthCard({
 }: AuthCardProps) {
   return (
     <div className="mx-auto flex w-full max-w-[400px] flex-col items-center">
-      <div className="flex w-full flex-col items-center gap-8 rounded-[8px] border border-[rgba(194,198,214,0.15)] bg-white p-[33px] drop-shadow-[0px_12px_16px_rgba(20,28,37,0.04)]">
-        <h1 className="text-2xl font-bold text-kommit-heading">{title}</h1>
+      <Card className="w-full items-center gap-8 rounded-[8px] border border-[rgba(194,198,214,0.15)] bg-white p-[33px] ring-0 drop-shadow-[0px_12px_16px_rgba(20,28,37,0.04)]">
+        <CardTitle className="text-2xl font-bold text-kommit-heading">
+          <h1>{title}</h1>
+        </CardTitle>
 
         {children}
 
@@ -30,7 +33,7 @@ export default function AuthCard({
             {footerLinkText}
           </Link>
         </p>
-      </div>
+      </Card>
 
       <SecurityNotice />
     </div>
