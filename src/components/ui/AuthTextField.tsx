@@ -31,7 +31,7 @@ export default function AuthTextField({
         className={`h-[43px] w-full rounded-[4px] border-x border-t border-b-2 bg-kommit-input-bg px-3 text-sm text-kommit-grey-blue placeholder:text-kommit-placeholder focus:outline-none ${
           errorMessage
             ? 'border-kommit-error'
-            : 'border-kommit-input-border'
+            : 'border-kommit-input-border focus:border-kommit-blue-dark'
         }`}
       />
       {errorMessage && (
