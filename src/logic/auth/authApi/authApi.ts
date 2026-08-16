@@ -8,18 +8,28 @@ export type AuthApiResult =
   | { ok: true; user: SessionUser }
   | { ok: false; error: ApiError }
 
+const NETWORK_ERROR: ApiError = {
+  code: 'INTERNAL_ERROR',
+  message: 'Impossible de contacter le serveur. Vérifie ta connexion et réessaie.',
+}
+
 async function postAuth(
   baseUrl: string,
   path: string,
   body: unknown,
   fetchImpl: typeof fetch
 ): Promise<AuthApiResult> {
-  const response = await fetchImpl(`${baseUrl}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(body),
-  })
+  let response: Response
+  try {
+    response = await fetchImpl(`${baseUrl}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    })
+  } catch {
+    return { ok: false, error: NETWORK_ERROR }
+  }
 
   const payload = await response.json().catch(() => null)
 

@@ -33,7 +33,7 @@ export default function SignupPage() {
 
   const signupMutation = useMutation({
     mutationFn: () =>
-      signUp(API_BASE_URL, { name: firstName, email, password }),
+      signUp(API_BASE_URL, { name: firstName.trim(), email, password }),
     onSuccess: (result) => {
       if (result.ok) {
         sessionStorage.setItem(ARRIVAL_FLAG_KEY, 'signup')

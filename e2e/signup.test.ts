@@ -47,18 +47,9 @@ test.describe('Signup', () => {
     // Après le clic : les messages apparaissent sous les champs concernés, et on
     // reste sur /signup (le texte exact est vérifié en unitaire, CA10/CA11/CA20).
     //
-    // BUG CONSTATÉ EN LANÇANT CE TEST (pas une supposition du test) : ce test est
-    // rouge sur le code actuel. Le <form> de SignupPage n'a pas `noValidate`, et
-    // le champ Email est un <input type="email">. Quand la valeur est mal formée,
-    // le navigateur bloque nativement l'événement `submit` (bulle de validation
-    // native + focus sur le champ) AVANT que le `onSubmit`/`handleSubmit` React ne
-    // s'exécute -- donc setEmailError/setPasswordError ne sont jamais appelés et
-    // aucun message custom ne s'affiche. Vérifié en isolant les deux champs : avec
-    // un email syntaxiquement valide, le message du mot de passe s'affiche
-    // correctement (le handler React tourne bien). Le test reste tel qu'écrit ici
-    // (comportement attendu par le CA) pour servir de garde-fou une fois corrigé
-    // (ajouter `noValidate` au <form>, décision qui revient au code de prod, pas à
-    // cet agent).
+    // Le <form> de SignupPage a `noValidate` : sans ça, la validation HTML5 native
+    // du navigateur sur <input type="email"> bloquerait l'événement `submit` avant
+    // que handleSubmit ne s'exécute, empêchant l'affichage des messages custom.
     await expect(page.getByText('Adresse email invalide.')).toBeVisible()
     await expect(
       page.getByText('Le mot de passe doit contenir au moins 8 caractères.')
