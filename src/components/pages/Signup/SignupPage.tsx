@@ -87,7 +87,7 @@ export default function SignupPage() {
         <div className="h-[154px]" />
       </div>
 
-      <form className="w-full flex-1" onSubmit={handleSubmit}>
+      <form className="w-full flex-1" noValidate onSubmit={handleSubmit}>
         <AuthCard
           title="Créer un compte"
           footerText="Tu as déjà un compte ?"

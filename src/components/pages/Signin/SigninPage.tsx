@@ -54,7 +54,7 @@ export default function SigninPage() {
         <div className="h-[154px]" />
       </div>
 
-      <form className="w-full flex-1" onSubmit={handleSubmit}>
+      <form className="w-full flex-1" noValidate onSubmit={handleSubmit}>
         <AuthCard
           title="Se connecter"
           footerText="Pas de compte ?"
