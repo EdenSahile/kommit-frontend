@@ -1,26 +1,59 @@
+import { useEffect } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { LogOutIcon } from 'lucide-react'
 import Navbar from '@/components/ui/Navbar'
 import AuthNavButton from '@/components/ui/AuthNavButton'
 import Footer from '@/components/ui/Footer'
+import { toast } from '@/components/ui/toast'
+import { getSession, signOut } from '@/logic/auth/authApi/authApi'
+import {
+  ARRIVAL_FLAG_KEY,
+  arrivalToastFor,
+  type ArrivalFlag,
+} from '@/logic/auth/arrivalToast/arrivalToast'
 
-type HomePageProps = {
-  isAuthenticated: boolean
-  firstName?: string
-  onSignOut?: () => void
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
-export default function HomePage({
-  isAuthenticated,
-  firstName,
-  onSignOut,
-}: HomePageProps) {
+export default function HomePage() {
+  const queryClient = useQueryClient()
+
+  const sessionQuery = useQuery({
+    queryKey: ['session'],
+    queryFn: () => getSession(API_BASE_URL),
+  })
+
+  const signOutMutation = useMutation({
+    mutationFn: () => signOut(API_BASE_URL),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['session'] }),
+  })
+
+  const session = sessionQuery.data
+  const isAuthenticated = Boolean(session)
+  const firstName = session?.user.name
+
+  useEffect(() => {
+    if (!session) return
+
+    const flag = sessionStorage.getItem(ARRIVAL_FLAG_KEY) as ArrivalFlag | null
+    sessionStorage.removeItem(ARRIVAL_FLAG_KEY)
+
+    const arrivalToast = arrivalToastFor(flag, session.user.name)
+    if (arrivalToast) {
+      toast.add({
+        type: arrivalToast.type,
+        title: arrivalToast.message,
+        description: '',
+      })
+    }
+  }, [session])
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-kommit-bg">
       <Navbar>
         {isAuthenticated ? (
           <button
             type="button"
-            onClick={onSignOut}
+            onClick={() => signOutMutation.mutate()}
             className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-base font-semibold text-kommit-grey-blue"
           >
             <LogOutIcon className="size-6" />

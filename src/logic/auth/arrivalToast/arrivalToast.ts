@@ -3,7 +3,10 @@
 // et null dans tous les autres cas (reload, retour navigateur, ouverture directe avec
 // session persistée) — sa consommation (écriture/suppression en storage) est câblée
 // ailleurs, hors de cette fonction pure.
-// Stub : pas de logique métier ici, seulement une valeur neutre.
+
+// Clé sessionStorage utilisée par les pages signin/signup et l'accueil pour
+// transporter le flag d'une auth réussie jusqu'au rendu du toast.
+export const ARRIVAL_FLAG_KEY = 'kommit:arrivalFlag'
 
 export type ArrivalFlag = 'signup' | 'signin'
 
@@ -12,6 +15,17 @@ export type ArrivalToast = {
   message: string
 }
 
-export function arrivalToastFor(): ArrivalToast | null {
+export function arrivalToastFor(
+  flag: ArrivalFlag | null,
+  firstName: string
+): ArrivalToast | null {
+  if (flag === 'signup') {
+    return { type: 'success', message: `Bienvenue ${firstName}, ton compte est créé.` }
+  }
+
+  if (flag === 'signin') {
+    return { type: 'success', message: `Content de te revoir ${firstName}.` }
+  }
+
   return null
 }
