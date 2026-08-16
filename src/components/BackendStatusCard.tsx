@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "@/components/ui/toast"
-import { buildToast, checkDb, checkServer } from "@/logic/backendStatus"
+import { buildToast, checkDb, checkServer } from "@/logic/backendStatus/backendStatus"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000"
 
