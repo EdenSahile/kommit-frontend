@@ -46,11 +46,43 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    --color-kommit-bg: var(--kommit-bg);
+    --color-kommit-heading: var(--kommit-heading);
+    --color-kommit-accent: var(--kommit-accent);
+    --color-kommit-blue-dark: var(--kommit-blue-dark);
+    --color-kommit-blue-light: var(--kommit-blue-light);
+    --color-kommit-blue-text: var(--kommit-blue-text);
+    --color-kommit-grey-blue: var(--kommit-grey-blue);
+    --color-kommit-grey: var(--kommit-grey);
+    --color-kommit-error: var(--kommit-error);
+    --color-kommit-success-bg: var(--kommit-success-bg);
+    --color-kommit-success-border: var(--kommit-success-border);
+    --color-kommit-success-text: var(--kommit-success-text);
+    --color-kommit-input-bg: var(--kommit-input-bg);
+    --color-kommit-input-border: var(--kommit-input-border);
+    --color-kommit-placeholder: var(--kommit-placeholder);
 }
 
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
+
+    --kommit-bg: #f7f9ff;
+    --kommit-heading: #141c25;
+    --kommit-accent: #0763cf;
+    --kommit-blue-dark: #0051ae;
+    --kommit-blue-light: #0969da;
+    --kommit-blue-text: #055bbf;
+    --kommit-grey-blue: #475569;
+    --kommit-grey: #424753;
+    --kommit-input-bg: #f7f9ff;
+    --kommit-input-border: #dae3ef;
+    --kommit-placeholder: rgba(114, 119, 133, 0.5);
+    --kommit-error: #ca3725;
+    --kommit-success-bg: #e0faeb;
+    --kommit-success-border: #066a31;
+    --kommit-success-text: #066a31;
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);

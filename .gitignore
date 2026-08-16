@@ -10,5 +10,11 @@ vite.config.d.ts
 # macOS
 .DS_Store
 
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
 # Subagent-driven development scratch workspace
 .superpowers/
