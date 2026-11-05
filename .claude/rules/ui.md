@@ -10,10 +10,10 @@ Comment on construit l'interface dans ce projet. Impératifs, valables **partout
 
 ## Toujours restyler depuis la maquette
 
-- Un composant shadcn sorti tel quel donne un rendu **générique**, reconnaissable. Après chaque `npx shadcn add <composant>`, **restyler le fichier depuis les tokens de la maquette** (couleurs, arrondis, espacements) avant de l'utiliser.
+- Un composant shadcn sorti tel quel donne un rendu **générique**, reconnaissable. Après chaque `pnpm dlx shadcn add <composant>`, **restyler le fichier depuis les tokens de la maquette** (couleurs, arrondis, espacements) avant de l'utiliser.
 - Le code du composant est copié dans `src/components/ui/` : il t'appartient, tu le modifies directement.
 
 ## S'assurer que shadcn est installé
 
-- **Composant manquant** (shadcn déjà initialisé) → l'ajouter sans hésiter : `npx shadcn add <composant>`.
+- **Composant manquant** (shadcn déjà initialisé) → l'ajouter sans hésiter : `pnpm dlx shadcn add <composant>`.
 - **shadcn pas encore initialisé dans le repo** → l'initialiser, mais en suivant la **procédure d'installation courante pour Tailwind v4** (elle a changé : alias de chemins, `components.json`, config Tailwind). Ne pas deviner la config — vérifier la procédure à jour avant de lancer `init`.
