@@ -7,6 +7,8 @@ import AuthCard from '@/components/ui/AuthCard'
 import AuthTextField from '@/components/ui/AuthTextField'
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton'
 import Footer from '@/components/ui/Footer'
+import { NAVBAR } from '@/data/layout'
+import { SIGNIN } from '@/data/signin'
 import { isSigninFormFilled } from '@/logic/auth/authFormState/authFormState'
 import { signIn } from '@/logic/auth/authApi/authApi'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
@@ -46,27 +48,27 @@ export default function SigninPage() {
     <div className="flex min-h-screen flex-col items-center bg-kommit-bg">
       <Navbar>
         <AuthNavButton to="/signup" variant="primary">
-          Créer un compte
+          {NAVBAR.signUp}
         </AuthNavButton>
       </Navbar>
 
-      <div className="w-full px-[200px] py-8">
-        <div className="h-[154px]" />
+      <div className="w-full px-6 py-8 md:px-12 lg:px-[200px]">
+        <div className="h-10 sm:h-[154px]" />
       </div>
 
       <form className="w-full flex-1" noValidate onSubmit={handleSubmit}>
         <AuthCard
-          title="Se connecter"
-          footerText="Pas de compte ?"
-          footerLinkText="Créer un compte maintenant."
+          title={SIGNIN.title}
+          footerText={SIGNIN.footerText}
+          footerLinkText={SIGNIN.footerLinkText}
           footerLinkTo="/signup"
         >
           <div className="flex w-full flex-col gap-5">
             <AuthTextField
-              label="Email"
+              label={SIGNIN.emailLabel}
               type="email"
               autoComplete="email"
-              placeholder="jean.dev@gmail.com"
+              placeholder={SIGNIN.emailPlaceholder}
               value={email}
               onChange={(value) => {
                 setEmail(value)
@@ -74,7 +76,7 @@ export default function SigninPage() {
               }}
             />
             <AuthTextField
-              label="Mot de passe"
+              label={SIGNIN.passwordLabel}
               type="password"
               autoComplete="current-password"
               value={password}
@@ -89,7 +91,7 @@ export default function SigninPage() {
               </p>
             )}
             <AuthSubmitButton
-              label="Me connecter"
+              label={SIGNIN.submit}
               disabled={!isFilled || signinMutation.isPending}
             />
           </div>

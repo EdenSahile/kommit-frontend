@@ -8,12 +8,12 @@ type NavbarProps = {
 
 export default function Navbar({ children }: NavbarProps) {
   return (
-    <header className="flex w-full items-center justify-between bg-white/80 px-6 py-5 backdrop-blur-[6px]">
-      <Link to="/">
+    <header className="flex w-full flex-wrap items-center justify-between gap-y-3 bg-white/80 px-4 py-5 backdrop-blur-[6px] sm:px-6">
+      <Link to="/" className="shrink-0">
         <Logo />
       </Link>
 
-      <nav className="flex items-center gap-6">{children}</nav>
+      <nav className="flex items-center gap-2 sm:gap-6">{children}</nav>
     </header>
   )
 }

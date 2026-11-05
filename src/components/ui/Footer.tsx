@@ -1,17 +1,19 @@
+import { FOOTER } from '@/data/layout'
+
 export default function Footer() {
   return (
-    <footer className="flex w-full items-center justify-center px-[156px] py-10">
+    <footer className="flex w-full items-center justify-center px-6 py-10 md:px-12 lg:px-[156px]">
       <p className="text-center text-sm text-kommit-grey">
-        Créé par{' '}
+        {FOOTER.creditPrefix}{' '}
         <a
-          href="https://www.youtube.com/@videv9858"
+          href={FOOTER.creditUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="font-bold"
         >
-          ViDev
+          {FOOTER.creditName}
         </a>{' '}
-        © 2026 Kommit. Tous droits réservés.
+        {FOOTER.rights}
       </p>
     </footer>
   )

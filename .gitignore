@@ -4,6 +4,7 @@ build/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+vite.config.js.timestamp-*.mjs
 .env
 .env.local
 
@@ -11,6 +12,7 @@ vite.config.d.ts
 .DS_Store
 
 # Playwright
+.playwright-mcp/
 test-results/
 playwright-report/
 blob-report/
@@ -18,3 +20,6 @@ playwright/.cache/
 
 # Subagent-driven development scratch workspace
 .superpowers/
+
+# Handoffs (notes de session locales)
+handoffs/

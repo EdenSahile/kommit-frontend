@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { LogOutIcon } from 'lucide-react'
 import Navbar from '@/components/ui/Navbar'
 import AuthNavButton from '@/components/ui/AuthNavButton'
+import SignOutButton from '@/components/ui/SignOutButton'
 import Footer from '@/components/ui/Footer'
 import { toast } from '@/components/ui/toast'
+import { NAVBAR } from '@/data/layout'
+import { HOME_AUTHENTICATED, HOME_VISITOR } from '@/data/home'
 import { getSession, signOut } from '@/logic/auth/authApi/authApi'
 import {
   ARRIVAL_FLAG_KEY,
@@ -53,47 +55,47 @@ export default function HomePage() {
       <Navbar>
         {isSessionResolved &&
           (isAuthenticated ? (
-            <button
-              type="button"
+            <SignOutButton
               onClick={() => signOutMutation.mutate()}
-              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-base font-semibold text-kommit-grey-blue"
-            >
-              <LogOutIcon className="size-6" />
-              Se déconnecter
-            </button>
+              disabled={signOutMutation.isPending}
+            />
           ) : (
             <>
               <AuthNavButton to="/signin" variant="secondary">
-                Se connecter
+                {NAVBAR.signIn}
               </AuthNavButton>
               <AuthNavButton to="/signup" variant="primary">
-                Créer un compte
+                {NAVBAR.signUp}
               </AuthNavButton>
             </>
           ))}
       </Navbar>
 
-      <section className="flex w-full flex-col items-center px-[200px] py-8">
+      <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-6 py-8 md:px-12 lg:px-[200px]">
         <div className="flex flex-col items-center gap-3 py-7 text-center">
           {isSessionResolved &&
             (isAuthenticated ? (
               <>
-                <h1 className="text-5xl font-bold text-kommit-heading">
-                  Quoi de neuf aujourd&apos;hui,{' '}
-                  <span className="text-kommit-accent">{firstName} ?</span>
+                <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
+                  {HOME_AUTHENTICATED.titleStart}
+                  <span className="text-kommit-accent">
+                    {HOME_AUTHENTICATED.titleAccent(firstName ?? '')}
+                  </span>
                 </h1>
                 <p className="max-w-[504px] text-lg text-kommit-grey-blue">
-                  Renseigne ton daily du jour ci-dessous.
+                  {HOME_AUTHENTICATED.subtitle}
                 </p>
               </>
             ) : (
               <>
-                <h1 className="text-5xl font-bold text-kommit-heading">
-                  Prêt(e) pour ton{' '}
-                  <span className="text-kommit-accent">daily standup ?</span>
+                <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
+                  {HOME_VISITOR.titleStart}
+                  <span className="text-kommit-accent">
+                    {HOME_VISITOR.titleAccent}
+                  </span>
                 </h1>
                 <p className="max-w-[544px] text-lg text-kommit-grey-blue">
-                  Track tes résultats pour que les jours ne se ressemblent pas.
+                  {HOME_VISITOR.subtitle}
                 </p>
               </>
             ))}

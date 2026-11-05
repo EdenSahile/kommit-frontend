@@ -7,6 +7,8 @@ import AuthCard from '@/components/ui/AuthCard'
 import AuthTextField from '@/components/ui/AuthTextField'
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton'
 import Footer from '@/components/ui/Footer'
+import { NAVBAR } from '@/data/layout'
+import { SIGNUP, SIGNUP_ERRORS } from '@/data/signup'
 import { isSignupFormFilled } from '@/logic/auth/authFormState/authFormState'
 import {
   isEmailValid,
@@ -61,13 +63,9 @@ export default function SignupPage() {
     const emailValid = isEmailValid(email)
     const passwordValid = isPasswordValid(password)
 
-    setFirstNameError(firstNameValid ? undefined : 'Le prénom est obligatoire.')
-    setEmailError(emailValid ? undefined : 'Adresse email invalide.')
-    setPasswordError(
-      passwordValid
-        ? undefined
-        : 'Le mot de passe doit contenir au moins 8 caractères.'
-    )
+    setFirstNameError(firstNameValid ? undefined : SIGNUP_ERRORS.firstName)
+    setEmailError(emailValid ? undefined : SIGNUP_ERRORS.email)
+    setPasswordError(passwordValid ? undefined : SIGNUP_ERRORS.password)
 
     if (!firstNameValid || !emailValid || !passwordValid) return
 
@@ -79,24 +77,24 @@ export default function SignupPage() {
     <div className="flex min-h-screen flex-col items-center bg-kommit-bg">
       <Navbar>
         <AuthNavButton to="/signin" variant="secondary">
-          Se connecter
+          {NAVBAR.signIn}
         </AuthNavButton>
       </Navbar>
 
-      <div className="w-full px-[200px] py-8">
-        <div className="h-[154px]" />
+      <div className="w-full px-6 py-8 md:px-12 lg:px-[200px]">
+        <div className="h-10 sm:h-[154px]" />
       </div>
 
       <form className="w-full flex-1" noValidate onSubmit={handleSubmit}>
         <AuthCard
-          title="Créer un compte"
-          footerText="Tu as déjà un compte ?"
-          footerLinkText="Connecte-toi."
+          title={SIGNUP.title}
+          footerText={SIGNUP.footerText}
+          footerLinkText={SIGNUP.footerLinkText}
           footerLinkTo="/signin"
         >
           <div className="flex w-full flex-col gap-5">
             <AuthTextField
-              label="Prénom*"
+              label={SIGNUP.firstNameLabel}
               type="text"
               autoComplete="given-name"
               value={firstName}
@@ -107,10 +105,10 @@ export default function SignupPage() {
               errorMessage={firstNameError}
             />
             <AuthTextField
-              label="Email*"
+              label={SIGNUP.emailLabel}
               type="email"
               autoComplete="email"
-              placeholder="jean.dev@gmail.com"
+              placeholder={SIGNUP.emailPlaceholder}
               value={email}
               onChange={(value) => {
                 setEmail(value)
@@ -119,7 +117,7 @@ export default function SignupPage() {
               errorMessage={emailError}
             />
             <AuthTextField
-              label="Mot de passe*"
+              label={SIGNUP.passwordLabel}
               type="password"
               autoComplete="new-password"
               value={password}
@@ -135,7 +133,7 @@ export default function SignupPage() {
               </p>
             )}
             <AuthSubmitButton
-              label="Créer un compte"
+              label={SIGNUP.submit}
               disabled={!isFilled || signupMutation.isPending}
             />
           </div>

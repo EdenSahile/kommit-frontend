@@ -13,14 +13,11 @@ export function uniqueEmail(prefix: string): string {
 
 /** Localise le champ de saisie associé à un libellé visible.
  *
- * `AuthTextField` (src/components/ui/AuthTextField.tsx) rend le libellé dans un
- * `<span>` -- pas un `<label htmlFor>` -- donc `getByLabel` ne fonctionne pas. Le
- * `<span>` et l'`<input>` sont des frères directs dans le DOM : on cible le libellé
- * visible par son texte, puis on prend l'input qui le suit immédiatement. */
+ * `AuthTextField` (src/components/ui/AuthTextField.tsx) rend un vrai
+ * `<label htmlFor>` relié à l'`<input>` par son id, donc on cible le champ par son
+ * nom accessible : c'est ce que lit un lecteur d'écran. */
 export function fieldByLabel(page: Page, label: string): Locator {
-  return page
-    .getByText(label, { exact: true })
-    .locator('xpath=following-sibling::input')
+  return page.getByLabel(label, { exact: true })
 }
 
 export type TestUser = { name: string; email: string; password: string }
