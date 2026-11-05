@@ -90,9 +90,7 @@ export default function SigninPage() {
                 {formError}
               </p>
             )}
-            {/* Bloc vide de la maquette (node 15:237) : pousse le bouton vers le
-                bas de la carte. Il absorbe la place quand aucune erreur ne
-                s'affiche, et se resserre quand le message apparait. */}
+            {/* Bloc vide de la maquette (node 15:237), il pousse le bouton en bas de carte. */}
             <div className="min-h-[65px] flex-1" />
             <AuthSubmitButton
               label={SIGNIN.submit}

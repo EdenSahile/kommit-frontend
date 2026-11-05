@@ -20,7 +20,7 @@ describe('signUp', () => {
   it('returns the user on success', async () => {
     const fetchImpl = fakeFetch({ ok: true, json: async () => ({ user }) })
 
-    const result = await signUp(
+    const signupOutcome = await signUp(
       BASE_URL,
       { name: 'Marc', email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
@@ -30,20 +30,20 @@ describe('signUp', () => {
       `${BASE_URL}/api/auth/sign-up/email`,
       expect.objectContaining({ method: 'POST', credentials: 'include' })
     )
-    expect(result).toEqual({ ok: true, user })
+    expect(signupOutcome).toEqual({ ok: true, user })
   })
 
   it('returns the ApiError from the response body on failure', async () => {
     const apiError = { code: 'EMAIL_ALREADY_EXISTS', message: 'Cet email est déjà utilisé' }
     const fetchImpl = fakeFetch({ ok: false, json: async () => apiError })
 
-    const result = await signUp(
+    const signupOutcome = await signUp(
       BASE_URL,
       { name: 'Marc', email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
     )
 
-    expect(result).toEqual({ ok: false, error: apiError })
+    expect(signupOutcome).toEqual({ ok: false, error: apiError })
   })
 
   it('falls back to a generic INTERNAL_ERROR when the error body is not JSON', async () => {
@@ -54,30 +54,30 @@ describe('signUp', () => {
       },
     })
 
-    const result = await signUp(
+    const signupOutcome = await signUp(
       BASE_URL,
       { name: 'Marc', email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
     )
 
-    expect(result).toEqual({
+    expect(signupOutcome).toEqual({
       ok: false,
       error: { code: 'INTERNAL_ERROR', message: 'Une erreur interne est survenue' },
     })
   })
 
-  it('returns a network-error result when the request itself fails', async () => {
+  it('returns a network error when the request itself fails', async () => {
     const fetchImpl = throwingFetch(new Error('network down'))
 
-    const result = await signUp(
+    const signupOutcome = await signUp(
       BASE_URL,
       { name: 'Marc', email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
     )
 
-    expect(result.ok).toBe(false)
-    if (!result.ok) {
-      expect(result.error.code).toBe('INTERNAL_ERROR')
+    expect(signupOutcome.ok).toBe(false)
+    if (!signupOutcome.ok) {
+      expect(signupOutcome.error.code).toBe('INTERNAL_ERROR')
     }
   })
 })
@@ -86,7 +86,7 @@ describe('signIn', () => {
   it('returns the user on success', async () => {
     const fetchImpl = fakeFetch({ ok: true, json: async () => ({ user }) })
 
-    const result = await signIn(
+    const signinOutcome = await signIn(
       BASE_URL,
       { email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
@@ -96,20 +96,20 @@ describe('signIn', () => {
       `${BASE_URL}/api/auth/sign-in/email`,
       expect.objectContaining({ method: 'POST', credentials: 'include' })
     )
-    expect(result).toEqual({ ok: true, user })
+    expect(signinOutcome).toEqual({ ok: true, user })
   })
 
   it('returns the ApiError from the response body on failure', async () => {
     const apiError = { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
     const fetchImpl = fakeFetch({ ok: false, json: async () => apiError })
 
-    const result = await signIn(
+    const signinOutcome = await signIn(
       BASE_URL,
       { email: 'marc@gmail.com', password: 'wrong' },
       fetchImpl
     )
 
-    expect(result).toEqual({ ok: false, error: apiError })
+    expect(signinOutcome).toEqual({ ok: false, error: apiError })
   })
 })
 
@@ -117,24 +117,24 @@ describe('getSession', () => {
   it('returns the session when the user is authenticated', async () => {
     const fetchImpl = fakeFetch({ ok: true, json: async () => ({ user }) })
 
-    const result = await getSession(BASE_URL, fetchImpl)
+    const session = await getSession(BASE_URL, fetchImpl)
 
-    expect(result).toEqual({ user })
+    expect(session).toEqual({ user })
   })
 
   it('returns null when the response is not ok', async () => {
     const fetchImpl = fakeFetch({ ok: false, json: async () => null })
 
-    const result = await getSession(BASE_URL, fetchImpl)
+    const session = await getSession(BASE_URL, fetchImpl)
 
-    expect(result).toBeNull()
+    expect(session).toBeNull()
   })
 
   it('returns null when the payload has no user', async () => {
     const fetchImpl = fakeFetch({ ok: true, json: async () => ({}) })
 
-    const result = await getSession(BASE_URL, fetchImpl)
+    const session = await getSession(BASE_URL, fetchImpl)
 
-    expect(result).toBeNull()
+    expect(session).toBeNull()
   })
 })

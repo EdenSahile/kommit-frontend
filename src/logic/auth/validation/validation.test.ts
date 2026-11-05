@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isEmailValid, isFirstNameValid, isPasswordValid } from './validation'
+import { isEmailValid, isFirstNameValid, isPasswordValid } from '@/logic/auth/validation/validation'
 
 describe('isFirstNameValid — CA20', () => {
   it('accepte un prénom simple', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { arrivalToastFor } from './arrivalToast'
+import { arrivalToastFor } from '@/logic/auth/arrivalToast/arrivalToast'
 
 describe('arrivalToastFor — CA3, CA4 (toast après signup / signin)', () => {
   it('compose le toast de bienvenue après un signup réussi', () => {

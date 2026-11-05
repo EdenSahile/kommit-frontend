@@ -79,7 +79,8 @@ export default function HomePage() {
                 <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
                   {HOME_AUTHENTICATED.titleStart}
                   <span className="text-kommit-accent">
-                    {HOME_AUTHENTICATED.titleAccent(firstName ?? '')}
+                    {firstName}
+                    {HOME_AUTHENTICATED.titleAccentSuffix}
                   </span>
                 </h1>
                 <p className="max-w-[504px] text-lg text-kommit-grey-blue">

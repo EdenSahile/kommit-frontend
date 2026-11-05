@@ -16,7 +16,7 @@ import {
   isPasswordValid,
 } from '@/logic/auth/validation/validation'
 import { signUp } from '@/lib/api/auth'
-import { authErrorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
+import { errorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
@@ -45,7 +45,7 @@ export default function SignupPage() {
 
       const target =
         result.error.code === 'EMAIL_ALREADY_EXISTS'
-          ? authErrorTargetFor(result.error.code)
+          ? errorTargetFor(result.error.code)
           : 'form'
 
       if (target === 'email') {

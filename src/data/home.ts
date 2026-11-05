@@ -7,8 +7,7 @@ export const HOME_VISITOR = {
 } as const
 
 export const HOME_AUTHENTICATED = {
-  titleStart: 'Quoi de neuf aujourd’hui, ',
-  /** Le prénom est injecté à l'exécution, d'où la fonction. */
-  titleAccent: (firstName: string) => `${firstName} ?`,
+  titleStart: "Quoi de neuf aujourd'hui, ",
+  titleAccentSuffix: ' ?',
   subtitle: 'Renseigne ton daily du jour ci-dessous.',
 } as const

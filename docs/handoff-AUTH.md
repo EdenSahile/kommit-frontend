@@ -6,7 +6,7 @@
 
 - **Maquette intégrée** (write-ui) : accueil (connecté/déconnecté), signin, signup. Composants dans `src/components/ui/` (Logo, Navbar, Footer, AuthCard, AuthTextField, AuthSubmitButton, AuthNavButton, SecurityNotice — `AuthCard`/`AuthTextField`/etc. reconstruits sur les primitives shadcn `Card`/`Button`) et `src/components/pages/{Home,Signin,Signup}/`.
 - **Tests** : inventaire (`testing/inventaire-AUTH.md`), tests unitaires Vitest (`src/logic/auth/**/*.test.ts`, 39/39 verts) et scénarios de smoke (`testing/smokes-AUTH.md`).
-- **Logique métier** (`src/logic/auth/`) : validation client (prénom/email/mot de passe), état des boutons (rempli/vide), routage d'erreur API (`authErrorTargetFor`), composition du toast d'arrivée (`arrivalToastFor`).
+- **Logique métier** (`src/logic/auth/`) : validation client (prénom/email/mot de passe), état des boutons (rempli/vide), routage d'erreur API (`errorTargetFor`), composition du toast d'arrivée (`arrivalToastFor`).
 - **Appel API réel câblé** (`src/lib/api/auth.ts`) : signup, signin, signout, lecture de session, contre Better Auth (`/api/auth/*`, cookies via `credentials: include`). Branché sur `SignupPage`, `SigninPage`, `HomePage`.
 - **Vérifié en local, backend réel** : signup → redirection + toast bienvenue ; reload → session persiste sans rejouer le toast (CA24) ; déconnexion silencieuse (CA5) ; signin correct → redirection + toast retour ; signin incorrect → erreur générique affichée sans cibler de champ (CA13).
 

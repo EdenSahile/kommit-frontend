@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isSigninFormFilled, isSignupFormFilled } from './formState'
+import { isSigninFormFilled, isSignupFormFilled } from '@/logic/auth/formState/formState'
 
 describe('isSigninFormFilled', () => {
   it('active le bouton quand email et mot de passe sont remplis', () => {

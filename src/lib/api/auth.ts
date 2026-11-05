@@ -1,8 +1,6 @@
 import type { ApiError, Session, SessionUser } from '@/types/apiContract'
 
-// Endpoints fournis par Better Auth (montés sur /api/auth/*, cf. apiContract.ts).
-// Le back ré-emballe ses erreurs en ApiError { code, message } avec un statut HTTP
-// cohérent — on lit donc directement le corps JSON en cas d'échec.
+// Le back ré-emballe les erreurs de Better Auth en ApiError, d'où la lecture directe du corps JSON.
 
 export type AuthApiResult =
   | { ok: true; user: SessionUser }
