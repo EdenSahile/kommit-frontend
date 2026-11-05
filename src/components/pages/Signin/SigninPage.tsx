@@ -33,6 +33,9 @@ export default function SigninPage() {
         return
       }
 
+      // Serveur muet : aucune ApiError, donc rien à afficher (cf. lib/api/auth.ts).
+      if (!result.error) return
+
       setFormError(result.error.message)
     },
   })

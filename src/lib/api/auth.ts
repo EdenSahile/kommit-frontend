@@ -2,14 +2,12 @@ import type { ApiError, Session, SessionUser } from '@/types/apiContract'
 
 // Le back ré-emballe les erreurs de Better Auth en ApiError, d'où la lecture directe du corps JSON.
 
+// `error: null` = le serveur n'a pas répondu, il n'y a donc aucune ApiError à
+// afficher. KOM-07 ne couvre pas ce cas (il relève de RM18/RM19), et on n'invente
+// pas de message : l'appelant ne montre rien et rend la main à l'utilisateur.
 export type AuthApiResult =
   | { ok: true; user: SessionUser }
-  | { ok: false; error: ApiError }
-
-const NETWORK_ERROR: ApiError = {
-  code: 'INTERNAL_ERROR',
-  message: 'Impossible de contacter le serveur. Vérifie ta connexion et réessaie.',
-}
+  | { ok: false; error: ApiError | null }
 
 async function postAuth(
   baseUrl: string,
@@ -26,7 +24,7 @@ async function postAuth(
       body: JSON.stringify(body),
     })
   } catch {
-    return { ok: false, error: NETWORK_ERROR }
+    return { ok: false, error: null }
   }
 
   const payload = await response.json().catch(() => null)

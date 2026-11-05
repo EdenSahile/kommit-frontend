@@ -66,19 +66,18 @@ describe('signUp', () => {
     })
   })
 
-  it('returns a network error when the request itself fails', async () => {
+  it("n'a aucune erreur à afficher quand le serveur ne répond pas du tout", () => {
+    // KOM-07 ne couvre pas la panne réseau (elle relève de RM18/RM19), donc on
+    // ne fabrique aucun message : l'appel échoue sans erreur affichable.
     const fetchImpl = throwingFetch(new Error('network down'))
 
-    const signupOutcome = await signUp(
+    return signUp(
       BASE_URL,
       { name: 'Marc', email: 'marc@gmail.com', password: 'motdepasse123' },
       fetchImpl
-    )
-
-    expect(signupOutcome.ok).toBe(false)
-    if (!signupOutcome.ok) {
-      expect(signupOutcome.error.code).toBe('INTERNAL_ERROR')
-    }
+    ).then((signupOutcome) => {
+      expect(signupOutcome).toEqual({ ok: false, error: null })
+    })
   })
 })
 

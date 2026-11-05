@@ -45,6 +45,9 @@ export default function SignupPage() {
         return
       }
 
+      // Serveur muet : aucune ApiError, donc rien à afficher (cf. lib/api/auth.ts).
+      if (!result.error) return
+
       const target =
         result.error.code === 'EMAIL_ALREADY_EXISTS'
           ? errorTargetFor(result.error.code)
