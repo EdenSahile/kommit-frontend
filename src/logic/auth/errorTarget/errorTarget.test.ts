@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { authErrorTargetFor } from './authErrorTarget'
+import { authErrorTargetFor } from './errorTarget'
 
 describe('authErrorTargetFor — CA9, CA13', () => {
   it("route EMAIL_ALREADY_EXISTS vers le champ email (signup, l'email est déjà pris)", () => {

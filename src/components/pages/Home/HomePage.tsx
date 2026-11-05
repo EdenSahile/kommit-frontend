@@ -7,7 +7,7 @@ import Footer from '@/components/ui/Footer'
 import { toast } from '@/components/ui/toast'
 import { NAVBAR } from '@/data/layout'
 import { HOME_AUTHENTICATED, HOME_VISITOR } from '@/data/home'
-import { getSession, signOut } from '@/logic/auth/authApi/authApi'
+import { getSession, signOut } from '@/lib/api/auth'
 import {
   ARRIVAL_FLAG_KEY,
   arrivalToastFor,

@@ -9,14 +9,14 @@ import AuthSubmitButton from '@/components/ui/AuthSubmitButton'
 import Footer from '@/components/ui/Footer'
 import { NAVBAR } from '@/data/layout'
 import { SIGNUP, SIGNUP_ERRORS } from '@/data/signup'
-import { isSignupFormFilled } from '@/logic/auth/authFormState/authFormState'
+import { isSignupFormFilled } from '@/logic/auth/formState/formState'
 import {
   isEmailValid,
   isFirstNameValid,
   isPasswordValid,
-} from '@/logic/auth/authValidation/authValidation'
-import { signUp } from '@/logic/auth/authApi/authApi'
-import { authErrorTargetFor } from '@/logic/auth/authErrorTarget/authErrorTarget'
+} from '@/logic/auth/validation/validation'
+import { signUp } from '@/lib/api/auth'
+import { authErrorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'

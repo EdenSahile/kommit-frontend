@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { getSession, signIn, signUp } from './authApi'
+import { getSession, signIn, signUp } from '@/lib/api/auth'
 
 const BASE_URL = 'http://localhost:3000'
 
