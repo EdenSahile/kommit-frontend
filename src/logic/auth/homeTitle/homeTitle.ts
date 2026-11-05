@@ -1,15 +1,16 @@
-// Compose le titre de l'accueil connecté à partir du prénom de la session (RM2).
-// Le titre est rendu en 2 morceaux parce que la maquette colore le prénom : `lead`
-// reste en couleur de texte, `accent` est le morceau mis en avant. Leur concaténation
-// est la phrase complète, c'est elle qui fait foi.
+import { HOME_AUTHENTICATED } from '@/data/home'
 
-// STUB — aucune logique métier ici. Implémentation à l'étape suivante du workflow.
+// Le titre est rendu en 2 morceaux parce que la maquette colore le prénom : `lead`
+// reste en couleur de texte, `accent` est le morceau mis en avant (RM2).
 
 export type HomeTitle = {
   lead: string
   accent: string
 }
 
-export function homeTitleFor(_firstName: string): HomeTitle {
-  return { lead: '', accent: '' }
+export function homeTitleFor(firstName: string): HomeTitle {
+  return {
+    lead: HOME_AUTHENTICATED.titleStart,
+    accent: `${firstName}${HOME_AUTHENTICATED.titleAccentSuffix}`,
+  }
 }

@@ -19,11 +19,12 @@ export type ArrivalToast = {
 // directement, et le test lui passe une fausse implémentation.
 export type ArrivalFlagStorage = Pick<Storage, 'getItem' | 'removeItem'>
 
-// STUB — aucune logique métier ici. Implémentation à l'étape suivante du workflow.
 export function consumeArrivalFlag(
-  _storage: ArrivalFlagStorage
+  storage: ArrivalFlagStorage
 ): ArrivalFlag | null {
-  return null
+  const flag = storage.getItem(ARRIVAL_FLAG_KEY) as ArrivalFlag | null
+  storage.removeItem(ARRIVAL_FLAG_KEY)
+  return flag
 }
 
 export function arrivalToastFor(

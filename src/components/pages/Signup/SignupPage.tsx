@@ -10,11 +10,8 @@ import Footer from '@/components/ui/Footer'
 import { NAVBAR } from '@/data/layout'
 import { SIGNUP, SIGNUP_ERRORS } from '@/data/signup'
 import { isSignupFormFilled } from '@/logic/auth/formState/formState'
-import {
-  isEmailValid,
-  isFirstNameValid,
-  isPasswordValid,
-} from '@/logic/auth/validation/validation'
+import { isAuthSubmitDisabled } from '@/logic/auth/submitState/submitState'
+import { signupFieldsToFlag } from '@/logic/auth/fieldErrors/fieldErrors'
 import { signUp } from '@/lib/api/auth'
 import { errorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
@@ -26,12 +23,17 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [firstNameError, setFirstNameError] = useState<string>()
-  const [emailError, setEmailError] = useState<string>()
-  const [passwordError, setPasswordError] = useState<string>()
+  // RM30 : avant la 1re soumission, aucun message ; après, les messages se
+  // recalculent à chaque saisie. D'où un booléen plutôt qu'un message par champ.
+  const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false)
+  const [emailServerError, setEmailServerError] = useState<string>()
   const [formError, setFormError] = useState<string>()
 
   const isFilled = isSignupFormFilled(firstName, email, password)
+  const flagged = signupFieldsToFlag(
+    { firstName, email, password },
+    hasSubmittedOnce
+  )
 
   const signupMutation = useMutation({
     mutationFn: () =>
@@ -49,7 +51,7 @@ export default function SignupPage() {
           : 'form'
 
       if (target === 'email') {
-        setEmailError(result.error.message)
+        setEmailServerError(result.error.message)
       } else {
         setFormError(result.error.message)
       }
@@ -58,16 +60,10 @@ export default function SignupPage() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    setHasSubmittedOnce(true)
 
-    const firstNameValid = isFirstNameValid(firstName)
-    const emailValid = isEmailValid(email)
-    const passwordValid = isPasswordValid(password)
-
-    setFirstNameError(firstNameValid ? undefined : SIGNUP_ERRORS.firstName)
-    setEmailError(emailValid ? undefined : SIGNUP_ERRORS.email)
-    setPasswordError(passwordValid ? undefined : SIGNUP_ERRORS.password)
-
-    if (!firstNameValid || !emailValid || !passwordValid) return
+    const toFlag = signupFieldsToFlag({ firstName, email, password }, true)
+    if (toFlag.firstName || toFlag.email || toFlag.password) return
 
     setFormError(undefined)
     signupMutation.mutate()
@@ -98,11 +94,10 @@ export default function SignupPage() {
               type="text"
               autoComplete="given-name"
               value={firstName}
-              onChange={(value) => {
-                setFirstName(value)
-                setFirstNameError(undefined)
-              }}
-              errorMessage={firstNameError}
+              onChange={setFirstName}
+              errorMessage={
+                flagged.firstName ? SIGNUP_ERRORS.firstName : undefined
+              }
             />
             <AuthTextField
               label={SIGNUP.emailLabel}
@@ -112,20 +107,22 @@ export default function SignupPage() {
               value={email}
               onChange={(value) => {
                 setEmail(value)
-                setEmailError(undefined)
+                setEmailServerError(undefined)
               }}
-              errorMessage={emailError}
+              errorMessage={
+                emailServerError ??
+                (flagged.email ? SIGNUP_ERRORS.email : undefined)
+              }
             />
             <AuthTextField
               label={SIGNUP.passwordLabel}
               type="password"
               autoComplete="new-password"
               value={password}
-              onChange={(value) => {
-                setPassword(value)
-                setPasswordError(undefined)
-              }}
-              errorMessage={passwordError}
+              onChange={setPassword}
+              errorMessage={
+                flagged.password ? SIGNUP_ERRORS.password : undefined
+              }
             />
             {formError && (
               <p className="w-full text-center text-xs text-kommit-error">
@@ -134,7 +131,7 @@ export default function SignupPage() {
             )}
             <AuthSubmitButton
               label={SIGNUP.submit}
-              disabled={!isFilled || signupMutation.isPending}
+              disabled={isAuthSubmitDisabled(isFilled, signupMutation.isPending)}
             />
           </div>
         </AuthCard>

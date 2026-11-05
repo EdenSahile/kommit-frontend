@@ -10,6 +10,7 @@ import Footer from '@/components/ui/Footer'
 import { NAVBAR } from '@/data/layout'
 import { SIGNIN } from '@/data/signin'
 import { isSigninFormFilled } from '@/logic/auth/formState/formState'
+import { isAuthSubmitDisabled } from '@/logic/auth/submitState/submitState'
 import { signIn } from '@/lib/api/auth'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
 
@@ -94,7 +95,7 @@ export default function SigninPage() {
             <div className="min-h-[65px] flex-1" />
             <AuthSubmitButton
               label={SIGNIN.submit}
-              disabled={!isFilled || signinMutation.isPending}
+              disabled={isAuthSubmitDisabled(isFilled, signinMutation.isPending)}
             />
           </div>
         </AuthCard>

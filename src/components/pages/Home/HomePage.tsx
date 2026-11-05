@@ -7,11 +7,11 @@ import Footer from '@/components/ui/Footer'
 import { toast } from '@/components/ui/toast'
 import { NAVBAR } from '@/data/layout'
 import { HOME_AUTHENTICATED, HOME_VISITOR } from '@/data/home'
+import { homeTitleFor } from '@/logic/auth/homeTitle/homeTitle'
 import { getSession, signOut } from '@/lib/api/auth'
 import {
-  ARRIVAL_FLAG_KEY,
   arrivalToastFor,
-  type ArrivalFlag,
+  consumeArrivalFlag,
 } from '@/logic/auth/arrivalToast/arrivalToast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
@@ -43,12 +43,12 @@ export default function HomePage() {
   const isAuthenticated = Boolean(session)
   const firstName = session?.user.name
   const isSessionResolved = !sessionQuery.isPending
+  const homeTitle = homeTitleFor(firstName ?? '')
 
   useEffect(() => {
     if (!session) return
 
-    const flag = sessionStorage.getItem(ARRIVAL_FLAG_KEY) as ArrivalFlag | null
-    sessionStorage.removeItem(ARRIVAL_FLAG_KEY)
+    const flag = consumeArrivalFlag(sessionStorage)
 
     const arrivalToast = arrivalToastFor(flag, session.user.name)
     if (arrivalToast) {
@@ -87,11 +87,8 @@ export default function HomePage() {
             (isAuthenticated ? (
               <>
                 <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
-                  {HOME_AUTHENTICATED.titleStart}
-                  <span className="text-kommit-accent">
-                    {firstName}
-                    {HOME_AUTHENTICATED.titleAccentSuffix}
-                  </span>
+                  {homeTitle.lead}
+                  <span className="text-kommit-accent">{homeTitle.accent}</span>
                 </h1>
                 <p className="max-w-[504px] text-lg text-kommit-grey-blue">
                   {HOME_AUTHENTICATED.subtitle}
