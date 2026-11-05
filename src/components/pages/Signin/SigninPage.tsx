@@ -98,6 +98,8 @@ export default function SigninPage() {
             <div className="min-h-[65px] flex-1" />
             <AuthSubmitButton
               label={SIGNIN.submit}
+              loadingLabel={SIGNIN.submitLoading}
+              isLoading={signinMutation.isPending}
               disabled={isAuthSubmitDisabled(isFilled, signinMutation.isPending)}
             />
           </div>

@@ -7,6 +7,7 @@ export const SIGNUP = {
   emailPlaceholder: 'jean.dev@gmail.com',
   passwordLabel: 'Mot de passe*',
   submit: 'Créer un compte',
+  submitLoading: 'Création du compte en cours',
   footerText: 'Tu as déjà un compte ?',
   footerLinkText: 'Connecte-toi.',
 } as const

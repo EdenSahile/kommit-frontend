@@ -134,6 +134,8 @@ export default function SignupPage() {
             )}
             <AuthSubmitButton
               label={SIGNUP.submit}
+              loadingLabel={SIGNUP.submitLoading}
+              isLoading={signupMutation.isPending}
               disabled={isAuthSubmitDisabled(isFilled, signupMutation.isPending)}
             />
           </div>

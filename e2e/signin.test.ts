@@ -74,27 +74,23 @@ test.describe('Signin', () => {
     await fieldByLabel(page, 'Email').fill(user.email)
     await fieldByLabel(page, 'Mot de passe').fill(user.password)
 
-    const submitButton = page.getByRole('button', { name: 'Me connecter' })
-    await submitButton.click()
+    await page.getByRole('button', { name: 'Me connecter' }).click()
 
-    // NOTE : RM17 (SM-7) décrit aussi un spinner et un texte aria « Connexion en
-    // cours », non implémentés côté code de prod
-    // (src/components/ui/AuthSubmitButton.tsx n'a qu'un état disabled et affiche
-    // son libellé en clair). Ce test transcrit uniquement ce qui existe : le bouton
-    // désactivé pendant l'appel. Le reste est porté par le test.fixme ci-dessous,
-    // pour ne pas perdre la trace de ce qui manque.
-    await expect(submitButton).toBeDisabled()
+    // Pendant l'appel, le libellé laisse place au spinner (RM17) : le nom
+    // accessible du bouton devient « Connexion en cours », d'où ce second
+    // locator. Le spinner lui-même est couvert par le test suivant ; ici on ne
+    // vérifie que la désactivation.
+    await expect(
+      page.getByRole('button', { name: 'Connexion en cours' })
+    ).toBeDisabled()
 
     await expect(page).toHaveURL('/')
   })
 
   // Le reste de RM17 (SM-7) : spinner à la place du libellé, et « Connexion en
-  // cours » annoncé aux lecteurs d'écran. Absent du code de prod, suivi dans
-  // KOM-29. En `fixme` plutôt qu'en test rouge permanent : un rouge installé perd
-  // sa valeur de signal, alors qu'un fixme reste visible dans le rapport de run et
-  // devient le test à dé-fixer quand KOM-29 sera traité.
-  test.fixme(
-    'RM17 (SM-7) -- spinner et texte aria pendant l\'appel (KOM-29, pas encore implémenté)',
+  // cours » annoncé aux lecteurs d'écran sans être affiché.
+  test(
+    'RM17 (SM-7) -- spinner et texte aria pendant l\'appel',
     async ({ page, request }) => {
       const user = {
         name: 'Marc',

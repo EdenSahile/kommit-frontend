@@ -6,6 +6,7 @@ export const SIGNIN = {
   emailPlaceholder: 'jean.dev@gmail.com',
   passwordLabel: 'Mot de passe',
   submit: 'Me connecter',
+  submitLoading: 'Connexion en cours',
   footerText: 'Pas de compte ?',
   footerLinkText: 'Créer un compte maintenant.',
 } as const
