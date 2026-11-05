@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { errorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
 
-describe('errorTargetFor — CA9, CA13', () => {
+describe('errorTargetFor — RM9, RM13 (message choisi d’après le code de l’ApiError)', () => {
   it("route EMAIL_ALREADY_EXISTS vers le champ email (signup, l'email est déjà pris)", () => {
     const targetForExistingEmail = errorTargetFor('EMAIL_ALREADY_EXISTS')
 

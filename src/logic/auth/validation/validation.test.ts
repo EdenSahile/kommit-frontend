@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isEmailValid, isFirstNameValid, isPasswordValid } from '@/logic/auth/validation/validation'
 
-describe('isFirstNameValid — CA20', () => {
+describe('isFirstNameValid — RM20 (signup, prénom trimé non vide)', () => {
   it('accepte un prénom simple', () => {
     const firstName = 'Marc'
 
@@ -27,7 +27,7 @@ describe('isFirstNameValid — CA20', () => {
   })
 })
 
-describe('isEmailValid — CA11', () => {
+describe('isEmailValid — RM11 (signup, email bien formé)', () => {
   it('accepte un email bien formé', () => {
     const email = 'jean.dev@gmail.com'
 
@@ -59,7 +59,7 @@ describe('isEmailValid — CA11', () => {
   })
 })
 
-describe('isPasswordValid — CA10', () => {
+describe('isPasswordValid — RM10 (signup, mot de passe de 8 caractères minimum)', () => {
   it('accepte un mot de passe de 8 caractères exactement', () => {
     const password = 'abcdefgh'
 
