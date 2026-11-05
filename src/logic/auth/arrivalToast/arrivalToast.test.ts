@@ -18,7 +18,7 @@ describe('arrivalToastFor — CA3, CA4 (toast après signup / signin)', () => {
 
     expect(arrivalToastFor(flag, firstName)).toEqual({
       type: 'success',
-      message: 'Content de te revoir Julie.',
+      message: 'Content de te revoir Julie',
     })
   })
 })

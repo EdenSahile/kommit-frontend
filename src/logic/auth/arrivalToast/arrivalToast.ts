@@ -24,7 +24,7 @@ export function arrivalToastFor(
   }
 
   if (flag === 'signin') {
-    return { type: 'success', message: `Content de te revoir ${firstName}.` }
+    return { type: 'success', message: `Content de te revoir ${firstName}` }
   }
 
   return null
