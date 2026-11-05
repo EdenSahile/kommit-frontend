@@ -17,14 +17,16 @@ correspondance avec l'inventaire soit complète.
    comportement qui existe et qu'on peut aller voir dans le navigateur. Les libellés et les
    messages attendus ci-dessous ont été relus dans le code (`src/data/`, `src/logic/auth/`)
    et dans le contrat d'API, pas supposés.
-2. **Une partie est déjà transcrite en e2e Playwright** (13 tests dans `e2e/`). Chaque
+2. **Tous les scénarios sont transcrits en e2e Playwright** depuis le 2026-11-05 (19 tests
+   dans `e2e/`, plus 1 `test.fixme` pour la part de SM-7 qui n'est pas dans le code). Chaque
    scénario indique s'il est déjà couvert et par quel fichier, sous la forme
    « 🤖 Déjà en e2e : … » ou « 🖐️ Pas d'e2e : à jouer à la main ». Inutile de rejouer à la
    main ce qui tourne tout seul : le smoke reste la source en langage humain, l'e2e est sa
    transcription.
-3. **2 scénarios échouent aujourd'hui, et c'est connu** : SM-7 (RM17, spinner et texte aria
-   absents du code, suivi dans KOM-29) et les SM-11 et SM-12 sur la position du toast. Le
-   détail est dans l'encadré de chaque scénario.
+3. **1 seul scénario échoue encore aujourd'hui, et c'est connu** : SM-7 (RM17, spinner et
+   texte aria absents du code, suivi dans KOM-29). La position du toast, qui faisait échouer
+   SM-11 et SM-12, a été corrigée depuis (commit 8434975) : le toast sort bien en haut à
+   droite. Le détail est dans l'encadré de chaque scénario.
 4. **2 libellés ont été arbitrés le 2026-11-05 en faveur de la maquette**, et le ticket Notion
    a été corrigé : le titre de l'accueil connecté est « Quoi de neuf aujourd'hui, {prénom} ? »
    et le toast de reconnexion est « Content de te revoir {prénom} », sans point final. La note
@@ -230,9 +232,8 @@ passe (il n'a pas été corrigé).
 > ℹ️ Le texte exact des messages est vérifié en unitaire (RM10, RM11, RM20). Ce smoke porte sur
 > le moment où ils apparaissent et disparaissent.
 
-🤖 Déjà en e2e : `e2e/signup.test.ts`, test « CA30 », mais **partiellement** : l'e2e couvre les
-étapes 1 et 2 (rien avant le submit, messages après). La mise à jour pendant la saisie
-(étape 3) n'est pas transcrite et reste à jouer à la main.
+🤖 Déjà en e2e : `e2e/signup.test.ts`, test « CA30 », **en entier** depuis le 2026-11-05 :
+l'étape 3 (la mise à jour pendant la saisie) y a été ajoutée. Rien ne reste à jouer à la main.
 
 - [ ] Vérifié
 
@@ -273,8 +274,11 @@ dans l'inspecteur d'accessibilité). Une fois la réponse reçue, on arrive sur 
 > la place. Il n'est pas rejoué ici : le smoke reste une passe rapide.
 
 🤖 Déjà en e2e : `e2e/signin.test.ts`, test « CA17 », mais **uniquement** la partie « bouton
-désactivé ». Le test porte une note expliquant que le spinner et le texte aria ne sont pas
-transcrits parce qu'ils ne sont pas dans le code de production.
+désactivé ». Le reste est écrit juste en dessous, en `test.fixme` nommé « RM17 (SM-7) », qui
+cible le spinner et le nom accessible « Connexion en cours » : il reste inerte jusqu'à ce que
+KOM-29 soit traité, puis il suffira de retirer le `fixme`. La moitié « annoncé sans être
+visible » reste à la main : un texte en `sr-only` garde une boîte de 1px, que Playwright compte
+comme visible, donc une assertion d'invisibilité échouerait sur un code pourtant correct.
 
 - [ ] Vérifié
 
@@ -393,18 +397,21 @@ connecté.
 
 Attendu : le toast se ferme immédiatement, sans rien changer à la page.
 
-> 🔴 **Divergence connue sur la position.** Le ticket et la maquette placent le toast **en haut
-> à droite**. Le code le place **en bas à droite** : `src/components/ui/toast.tsx` donne au
-> viewport les classes `bottom-4` et `sm:right-4`. Le reste du scénario (texte, icône, croix,
-> disparition automatique) passe. À trancher par le parent : corriger le code pour suivre la
-> maquette, ou corriger la maquette et le ticket. En attendant, l'attendu ci-dessus dit « dans
-> un coin de l'écran » pour ne pas figer une position fausse.
+> ✅ **Divergence de position résolue.** Ce cadre annonçait un toast sorti **en bas à droite**
+> au lieu du haut à droite de la maquette. Le code a été corrigé depuis (commit 8434975) :
+> `src/components/ui/toast.tsx` donne maintenant au viewport `top-[100px]` et `sm:right-4`,
+> donc en haut à droite, sous la navbar. Plus rien à trancher.
 >
-> ℹ️ Petite anomalie d'accessibilité au passage : la croix de fermeture porte le nom accessible
-> « Close toast », en anglais, dans une interface entièrement en français.
+> ℹ️ 2 anomalies d'accessibilité sur la croix de fermeture, relevées en la transcrivant.
+> D'abord, elle porte le nom accessible « Close toast », en anglais, dans une interface
+> entièrement en français. Ensuite, Base UI la laisse `aria-hidden="true"` tant que la pile de
+> toasts n'est pas survolée ou focalisée : elle est donc hors de l'arbre d'accessibilité au
+> moment où le toast apparaît. Les 2 points sont à voir avec le parent, hors périmètre e2e.
 
-🖐️ Pas d'e2e : aucun des 13 tests de `e2e/` ne couvre le toast. À jouer à la main, puis à
-transcrire.
+🤖 Déjà en e2e : `e2e/toast.test.ts`, 2 tests « RM3 (SM-11) » -- un pour l'apparition et la
+disparition automatique, un pour la fermeture à la croix. Le survol du toast est nécessaire
+pour atteindre la croix (voir la note de code), et il met en pause la disparition automatique :
+d'où 2 tests plutôt qu'un.
 
 - [ ] Vérifié
 
@@ -430,10 +437,10 @@ Attendu : à l'arrivée sur `/`, un toast de succès affiche exactement « Conte
 Marc », sans point final, avec sa croix de fermeture, et disparaît de lui-même au bout de
 quelques secondes. Le message « Bienvenue Marc, ton compte est créé. » n'apparaît pas.
 
-> 🔴 Même divergence de position que SM-11 : le toast sort en bas à droite au lieu du haut à
-> droite annoncé par la maquette.
+> ✅ Même correction de position que SM-11 : le toast sort bien en haut à droite.
 
-🖐️ Pas d'e2e : à jouer à la main.
+🤖 Déjà en e2e : `e2e/toast.test.ts`, test « RM4 (SM-12) ». Le `exact: true` du test rejette
+une variante avec point final, et vérifie au passage que le message du signup n'apparaît pas.
 
 - [ ] Vérifié
 
@@ -466,7 +473,7 @@ Marc, ton compte est créé. » ni « Content de te revoir Marc ».
 > ⚠️ 3 étapes et 2 points d'observation, parce que RM24 nomme explicitement 2 gestes distincts
 > (rechargement, retour navigateur). C'est la limite du smoke, pas un dépassement.
 
-🖐️ Pas d'e2e : à jouer à la main.
+🤖 Déjà en e2e : `e2e/toast.test.ts`, test « RM24 (SM-13) ».
 
 - [ ] Vérifié
 
@@ -488,7 +495,9 @@ l'onglet (sans se déconnecter).
 Attendu : l'accueil s'affiche en état connecté, titre « Quoi de neuf aujourd'hui, Marc ? » et
 bouton « Se déconnecter » dans le header. Aucun toast n'apparaît, à aucun moment.
 
-🖐️ Pas d'e2e : à jouer à la main.
+🤖 Déjà en e2e : `e2e/toast.test.ts`, test « RM25 (SM-14) ». Le nouvel onglet est un
+`context.newPage()` : il partage les cookies, donc la session, mais pas le `sessionStorage`,
+qui est propre à chaque onglet. C'est exactement la situation que décrit RM25.
 
 - [ ] Vérifié
 
@@ -527,8 +536,8 @@ serveur et pas seulement oubliée côté écran.
 > « Se déconnecter » (`src/data/layout.ts`, `NAVBAR.signOut`), conforme à la maquette. C'est
 > « Se déconnecter » qu'il faut chercher à l'écran.
 
-🤖 Déjà en e2e : `e2e/signout.test.ts`, test « CA5 », pour l'étape 1 (y compris l'absence de
-modale et de toast). Le rechargement de l'étape 2 n'est pas transcrit et reste à jouer à la main.
+🤖 Déjà en e2e : `e2e/signout.test.ts`, test « CA5 », **en entier** depuis le 2026-11-05 : le
+rechargement de l'étape 2 y a été ajouté.
 
 - [ ] Vérifié
 
@@ -562,6 +571,8 @@ aucun message d'expiration n'apparaît.
 > raccourcir la durée de session côté backend, ce qui sort du périmètre de ce repo et de celui
 > d'un smoke.
 
-🖐️ Pas d'e2e : à jouer à la main.
+🤖 Déjà en e2e : `e2e/signout.test.ts`, test « RM31 (SM-16) ». Le test vérifie d'abord que le
+cookie `better-auth.session_token` est bien posé, puis le supprime via
+`context.clearCookies`, et recharge.
 
 - [ ] Vérifié
