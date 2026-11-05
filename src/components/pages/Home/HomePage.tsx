@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Navbar from '@/components/ui/Navbar'
 import AuthNavButton from '@/components/ui/AuthNavButton'
@@ -24,9 +24,19 @@ export default function HomePage() {
     queryFn: () => getSession(API_BASE_URL),
   })
 
+  // La déconnexion est silencieuse (RM5) : le toast d'arrivée encore à l'écran
+  // doit partir avec la session, sinon il survit à l'état connecté qui l'a produit.
+  const arrivalToastId = useRef<string | null>(null)
+
   const signOutMutation = useMutation({
     mutationFn: () => signOut(API_BASE_URL),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['session'] }),
+    onSuccess: () => {
+      if (arrivalToastId.current) {
+        toast.close(arrivalToastId.current)
+        arrivalToastId.current = null
+      }
+      queryClient.invalidateQueries({ queryKey: ['session'] })
+    },
   })
 
   const session = sessionQuery.data
@@ -42,7 +52,7 @@ export default function HomePage() {
 
     const arrivalToast = arrivalToastFor(flag, session.user.name)
     if (arrivalToast) {
-      toast.add({
+      arrivalToastId.current = toast.add({
         type: arrivalToast.type,
         title: arrivalToast.message,
         description: '',
