@@ -47,7 +47,7 @@ test.describe('Signin', () => {
     // http://localhost:3000) : générique, ne nomme ni l'email ni le mot de passe.
     // Le texte exact n'est pas fixé par src/types/apiContract.ts (ApiError.message
     // est un string libre) -- point signalé comme ambigu par testing/smokes-AUTH.md.
-    const errorMessage = page.getByText('Invalid email or password')
+    const errorMessage = page.getByText('Email ou mot de passe incorrect')
     await expect(errorMessage).toBeVisible()
     await expect(page).toHaveURL('/signin')
   })

@@ -12,7 +12,7 @@
 
 ## Bug backend identifié — reporté à plus tard
 
-Sur identifiants invalides, le message d'erreur renvoyé par l'API est en anglais (« Invalid email or password ») au lieu du français attendu.
+Résolu le 2026-11-06 : le backend écrit lui-même « Email ou mot de passe incorrect » au lieu de relayer le message anglais de Better Auth, et y range aussi le cas d'un email mal formé (RM13).
 
 - Fichier en cause : `kommit-backend/src/services/authErrorMapper/authErrorMapper.ts`, cas `INVALID_EMAIL_OR_PASSWORD` — reprend `error.body.message` (texte brut de Better Auth) au lieu d'un message français en dur, contrairement à `EMAIL_ALREADY_EXISTS` qui en a un (« Cet email est déjà utilisé »).
 - Le frontend n'a rien à changer : il affiche fidèlement `ApiError.message` tel que reçu.

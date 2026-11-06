@@ -99,7 +99,7 @@ describe('signIn', () => {
   })
 
   it('returns the ApiError from the response body on failure', async () => {
-    const apiError = { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
+    const apiError = { code: 'INVALID_CREDENTIALS', message: 'Email ou mot de passe incorrect' }
     const fetchImpl = fakeFetch({ ok: false, json: async () => apiError })
 
     const signinOutcome = await signIn(
