@@ -1,7 +1,6 @@
 /** Libellés de la navbar et du footer, partagés par les 3 écrans. */
 
 export const NAVBAR = {
-  logoAlt: 'Kommit',
   logoText: 'Kommit',
   signIn: 'Se connecter',
   signUp: 'Créer un compte',

@@ -69,6 +69,7 @@ export default function SignupPage() {
     if (toFlag.firstName || toFlag.email || toFlag.password) return
 
     setFormError(undefined)
+    setEmailServerError(undefined)
     signupMutation.mutate()
   }
 

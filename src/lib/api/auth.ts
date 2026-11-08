@@ -58,14 +58,21 @@ export function signIn(
   return postAuth(baseUrl, '/api/auth/sign-in/email', body, fetchImpl)
 }
 
+// Lève quand le serveur n'a pas fermé la session. Sans ça, un 500 passait pour un
+// succès : l'appelant nettoyait son affichage alors que le cookie était toujours
+// valide, et l'utilisateur restait connecté sans le savoir.
 export async function signOut(
   baseUrl: string,
   fetchImpl: typeof fetch = fetch
 ): Promise<void> {
-  await fetchImpl(`${baseUrl}/api/auth/sign-out`, {
+  const response = await fetchImpl(`${baseUrl}/api/auth/sign-out`, {
     method: 'POST',
     credentials: 'include',
   })
+
+  if (!response.ok) {
+    throw new Error(`Déconnexion refusée par le serveur (${response.status})`)
+  }
 }
 
 export async function getSession(
