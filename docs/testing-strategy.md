@@ -104,6 +104,29 @@ plus une fois** et on rapporte le résultat, on **n'itère pas** en relançant. 
 Aujourd'hui la CI ne rejoue que les unitaires ; la suite déterministe est prête à y entrer,
 la `.nondet` reste dehors par nature.
 
+### Deux contraintes relevées au premier run complet (2026-11-05), à traiter en CI (KOM-10)
+
+La suite déterministe a tourné en entier pour la première fois le 2026-11-05 : 13/13 au
+vert, en 21 secondes, backend démarré à la main. Deux obstacles sont apparus, qui
+concernent directement la mise en CI.
+
+**1. Le parallélisme fait tomber les 13 tests.** Avec la config par défaut
+(`fullyParallel: true`, `workers` non fixé, donc un par cœur), les 13 échouent sur
+`browserType.launch: Target page, context or browser has been closed`, les logs montrant
+`kill EPERM` puis `SIGKILL` sur chaque processus Chromium. Ce n'est pas un bug des tests :
+lancé seul, le même binaire rend une page sans problème, et `chromium.launch()` depuis un
+script Node fonctionne. C'est le lancement simultané de plusieurs instances qui est tué.
+Avec `--workers=1`, tout passe. Avant de garder `fullyParallel` en CI, vérifier si le
+runner GitHub a la même limite ; sinon figer `workers: 1` pour cette suite.
+
+**2. Le premier appel au backend dépasse le timeout de 5 secondes.** Au premier run, le
+seul échec était `CA2`, bloqué sur `toHaveURL` avec le bouton de soumission encore
+`[disabled]`, donc la requête de signup toujours en vol. Rejoué backend chaud, le même
+fichier passe en 4,3 secondes pour 3 tests. C'est un démarrage à froid (connexion à la
+base, puis hachage du mot de passe au premier signup). En CI le backend sera **toujours**
+froid au premier test : prévoir une attente de disponibilité réelle avant de lancer la
+suite (appel répété jusqu'à réponse), ou un timeout plus large sur le premier parcours.
+
 ## Format des smokes : langage humain, prêt pour Playwright
 
 Les smokes s'écrivent en français, exécutables par un humain. La discipline de format les

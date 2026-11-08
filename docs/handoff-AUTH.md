@@ -6,13 +6,13 @@
 
 - **Maquette intégrée** (write-ui) : accueil (connecté/déconnecté), signin, signup. Composants dans `src/components/ui/` (Logo, Navbar, Footer, AuthCard, AuthTextField, AuthSubmitButton, AuthNavButton, SecurityNotice — `AuthCard`/`AuthTextField`/etc. reconstruits sur les primitives shadcn `Card`/`Button`) et `src/components/pages/{Home,Signin,Signup}/`.
 - **Tests** : inventaire (`testing/inventaire-AUTH.md`), tests unitaires Vitest (`src/logic/auth/**/*.test.ts`, 39/39 verts) et scénarios de smoke (`testing/smokes-AUTH.md`).
-- **Logique métier** (`src/logic/auth/`) : validation client (prénom/email/mot de passe), état des boutons (rempli/vide), routage d'erreur API (`authErrorTargetFor`), composition du toast d'arrivée (`arrivalToastFor`).
-- **Appel API réel câblé** (`src/logic/auth/authApi/authApi.ts`) : signup, signin, signout, lecture de session, contre Better Auth (`/api/auth/*`, cookies via `credentials: include`). Branché sur `SignupPage`, `SigninPage`, `HomePage`.
+- **Logique métier** (`src/logic/auth/`) : validation client (prénom/email/mot de passe), état des boutons (rempli/vide), routage d'erreur API (`errorTargetFor`), composition du toast d'arrivée (`arrivalToastFor`).
+- **Appel API réel câblé** (`src/lib/api/auth.ts`) : signup, signin, signout, lecture de session, contre Better Auth (`/api/auth/*`, cookies via `credentials: include`). Branché sur `SignupPage`, `SigninPage`, `HomePage`.
 - **Vérifié en local, backend réel** : signup → redirection + toast bienvenue ; reload → session persiste sans rejouer le toast (CA24) ; déconnexion silencieuse (CA5) ; signin correct → redirection + toast retour ; signin incorrect → erreur générique affichée sans cibler de champ (CA13).
 
 ## Bug backend identifié — reporté à plus tard
 
-Sur identifiants invalides, le message d'erreur renvoyé par l'API est en anglais (« Invalid email or password ») au lieu du français attendu.
+Résolu le 2026-11-06 : le backend écrit lui-même « Email ou mot de passe incorrect » au lieu de relayer le message anglais de Better Auth, et y range aussi le cas d'un email mal formé (RM13).
 
 - Fichier en cause : `kommit-backend/src/services/authErrorMapper/authErrorMapper.ts`, cas `INVALID_EMAIL_OR_PASSWORD` — reprend `error.body.message` (texte brut de Better Auth) au lieu d'un message français en dur, contrairement à `EMAIL_ALREADY_EXISTS` qui en a un (« Cet email est déjà utilisé »).
 - Le frontend n'a rien à changer : il affiche fidèlement `ApiError.message` tel que reçu.

@@ -20,7 +20,7 @@ export default function AuthNavButton({
   return (
     <Link
       to={to}
-      className={`flex items-center justify-center rounded-[4px] border border-kommit-blue-dark px-4 py-3 text-base font-semibold ${variantClasses}`}
+      className={`flex min-h-11 shrink-0 cursor-pointer items-center justify-center rounded-[4px] border border-kommit-blue-dark px-3 py-2 text-sm font-semibold whitespace-nowrap sm:min-h-0 sm:px-4 sm:py-3 sm:text-base ${variantClasses}`}
     >
       {children}
     </Link>

@@ -55,6 +55,19 @@ test.describe('Signup', () => {
       page.getByText('Le mot de passe doit contenir au moins 8 caractères.')
     ).toBeVisible()
     await expect(page).toHaveURL('/signup')
+
+    // Étape 3 de SM-6 : après la 1re soumission, les messages se mettent à jour
+    // pendant la saisie. Corriger l'email fait partir SON message, et seulement le
+    // sien : celui du mot de passe reste, puisque le mot de passe n'a pas été
+    // corrigé. C'est l'ORDRE que RM30 exige (rien, puis au submit, puis à la
+    // saisie) ; le texte exact des messages est vérifié en unitaire.
+    await fieldByLabel(page, 'Email*').fill('marc@kommit-test.dev')
+
+    await expect(page.getByText('Adresse email invalide.')).toHaveCount(0)
+    await expect(
+      page.getByText('Le mot de passe doit contenir au moins 8 caractères.')
+    ).toBeVisible()
+    await expect(page).toHaveURL('/signup')
   })
 
   test('CA9 -- signup avec un email déjà utilisé : message d\'erreur', async ({

@@ -6,6 +6,6 @@ import type { AuthErrorCode } from '@/types/apiContract'
 
 export type AuthErrorTarget = 'email' | 'form'
 
-export function authErrorTargetFor(code: AuthErrorCode): AuthErrorTarget {
+export function errorTargetFor(code: AuthErrorCode): AuthErrorTarget {
   return code === 'EMAIL_ALREADY_EXISTS' ? 'email' : 'form'
 }

@@ -1,22 +1,18 @@
 # Périmètre de travail — ce repo et rien d'autre
 
-Le seul endroit où il est permis d'écrire est le repo courant : `kommit-frontend-ccem/`.
+**Le seul endroit où il est permis d'écrire de sa propre initiative, c'est l'arborescence de `kommit-frontend/`.** Tout le reste est fermé par défaut : le repo `kommit-backend/`, le dossier parent `kommit-perso/`, `~/.claude`, et n'importe quel autre dossier du système.
 
-## Interdit
+« Écrire » couvre tout : créer, modifier ou supprimer un fichier (code, config, tests, docs, `.claude/`, migrations), mais aussi lancer une commande qui écrit dedans (`git` qui change l'état, `pnpm install`, un script, un formateur, un codemod). Et l'interdiction porte sur **l'emplacement du fichier**, pas sur la façon d'y arriver : un chemin absolu, un `cd` ou un lien symbolique ne la contournent pas.
 
-- **Écrire dans `kommit-backend-ccem/`**, sous n'importe quelle forme : créer, modifier ou supprimer un fichier (code, config, tests, docs, `.claude/`, migrations, n'importe quoi), lancer une commande qui écrit dedans (`git` qui change l'état, `pnpm install`, un script, un formateur, un codemod…).
-- Écrire dans le dossier parent `kommit-ccem/` (dont `.claude/`, `.vscode/`).
-- Écrire ailleurs sur la machine : `~/.claude`, `/tmp`, un autre repo, le Bureau…
-- Contourner par un chemin absolu, un lien symbolique ou un `cd` : l'interdiction porte sur l'emplacement des fichiers, pas sur la façon d'y arriver.
+Le cas qui compte le plus est le backend. C'est un repo indépendant, avec sa propre stack, sa propre histoire git et sa propre session Claude Code : une modification faite d'ici ne serait ni review ni commitée correctement. Il ne se modifie donc pas depuis ici pour aligner les deux côtés, ni parce que l'utilisateur décrit un besoin qui touche visiblement le back : **décrire un besoin n'est pas demander une modification**.
 
-## Autorisé
+## Ce qui ouvre la porte
 
-- Écrire partout dans `kommit-frontend-ccem/`.
-- **Lire** le backend et le dossier parent (`Read`, `Grep`, `Glob`, `git log`, `git diff`…) pour comprendre le contexte, une API, un contrat de données.
-- Écrire dans le dossier scratchpad fourni par la session pour les fichiers temporaires.
+Une **demande explicite de l'utilisateur** d'écrire à cet endroit-là. Il demande de reprendre un bug dans le backend ou de corriger un fichier de config ailleurs : on le fait, sans redemander.
 
-## Si une demande implique d'écrire ailleurs
+Sinon, on demande l'autorisation avant d'écrire. La ligne de partage tient en une question : **est-ce l'utilisateur qui a demandé cette écriture-là, ou est-ce moi qui l'ai jugée utile ?**
 
-Demander l'autorisation avant de vouloir le faire. Exception quand la demande est explicitement demandée par l'utilisateur, par exemple pour corriger un fichier de skill dans un autre repo ou pour modifier un bug dans le backend.
+## Toujours libre
 
-Rappel : Kommit est un projet multi-repo. Le backend est un repo indépendant, avec sa propre stack et sa propre histoire git. Une modification faite d'ici ne serait ni review ni commit correctement.
+- **Lire** en dehors du repo (`Read`, `Grep`, `Glob`, `git log`, `git diff`…) pour comprendre le contexte, une API, un contrat de données.
+- Écrire dans le dossier scratchpad fourni par la session, pour les fichiers temporaires.

@@ -7,14 +7,13 @@ import AuthCard from '@/components/ui/AuthCard'
 import AuthTextField from '@/components/ui/AuthTextField'
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton'
 import Footer from '@/components/ui/Footer'
-import { isSignupFormFilled } from '@/logic/auth/authFormState/authFormState'
-import {
-  isEmailValid,
-  isFirstNameValid,
-  isPasswordValid,
-} from '@/logic/auth/authValidation/authValidation'
-import { signUp } from '@/logic/auth/authApi/authApi'
-import { authErrorTargetFor } from '@/logic/auth/authErrorTarget/authErrorTarget'
+import { NAVBAR } from '@/data/layout'
+import { SIGNUP, SIGNUP_ERRORS } from '@/data/signup'
+import { isSignupFormFilled } from '@/logic/auth/formState/formState'
+import { isAuthSubmitDisabled } from '@/logic/auth/submitState/submitState'
+import { signupFieldsToFlag } from '@/logic/auth/fieldErrors/fieldErrors'
+import { signUp } from '@/lib/api/auth'
+import { errorTargetFor } from '@/logic/auth/errorTarget/errorTarget'
 import { ARRIVAL_FLAG_KEY } from '@/logic/auth/arrivalToast/arrivalToast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
@@ -24,12 +23,17 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [firstNameError, setFirstNameError] = useState<string>()
-  const [emailError, setEmailError] = useState<string>()
-  const [passwordError, setPasswordError] = useState<string>()
+  // RM30 : avant la 1re soumission, aucun message ; après, les messages se
+  // recalculent à chaque saisie. D'où un booléen plutôt qu'un message par champ.
+  const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false)
+  const [emailServerError, setEmailServerError] = useState<string>()
   const [formError, setFormError] = useState<string>()
 
   const isFilled = isSignupFormFilled(firstName, email, password)
+  const flagged = signupFieldsToFlag(
+    { firstName, email, password },
+    hasSubmittedOnce
+  )
 
   const signupMutation = useMutation({
     mutationFn: () =>
@@ -41,13 +45,16 @@ export default function SignupPage() {
         return
       }
 
+      // Serveur muet : aucune ApiError, donc rien à afficher (cf. lib/api/auth.ts).
+      if (!result.error) return
+
       const target =
         result.error.code === 'EMAIL_ALREADY_EXISTS'
-          ? authErrorTargetFor(result.error.code)
+          ? errorTargetFor(result.error.code)
           : 'form'
 
       if (target === 'email') {
-        setEmailError(result.error.message)
+        setEmailServerError(result.error.message)
       } else {
         setFormError(result.error.message)
       }
@@ -56,22 +63,13 @@ export default function SignupPage() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    setHasSubmittedOnce(true)
 
-    const firstNameValid = isFirstNameValid(firstName)
-    const emailValid = isEmailValid(email)
-    const passwordValid = isPasswordValid(password)
-
-    setFirstNameError(firstNameValid ? undefined : 'Le prénom est obligatoire.')
-    setEmailError(emailValid ? undefined : 'Adresse email invalide.')
-    setPasswordError(
-      passwordValid
-        ? undefined
-        : 'Le mot de passe doit contenir au moins 8 caractères.'
-    )
-
-    if (!firstNameValid || !emailValid || !passwordValid) return
+    const toFlag = signupFieldsToFlag({ firstName, email, password }, true)
+    if (toFlag.firstName || toFlag.email || toFlag.password) return
 
     setFormError(undefined)
+    setEmailServerError(undefined)
     signupMutation.mutate()
   }
 
@@ -79,55 +77,56 @@ export default function SignupPage() {
     <div className="flex min-h-screen flex-col items-center bg-kommit-bg">
       <Navbar>
         <AuthNavButton to="/signin" variant="secondary">
-          Se connecter
+          {NAVBAR.signIn}
         </AuthNavButton>
       </Navbar>
 
-      <div className="w-full px-[200px] py-8">
-        <div className="h-[154px]" />
+      <div className="w-full px-6 py-8 md:px-12 lg:px-[200px]">
+        <div className="h-10 sm:h-[154px]" />
       </div>
 
       <form className="w-full flex-1" noValidate onSubmit={handleSubmit}>
         <AuthCard
-          title="Créer un compte"
-          footerText="Tu as déjà un compte ?"
-          footerLinkText="Connecte-toi."
+          title={SIGNUP.title}
+          footerText={SIGNUP.footerText}
+          footerLinkText={SIGNUP.footerLinkText}
           footerLinkTo="/signin"
         >
           <div className="flex w-full flex-col gap-5">
             <AuthTextField
-              label="Prénom*"
+              label={SIGNUP.firstNameLabel}
               type="text"
               autoComplete="given-name"
               value={firstName}
-              onChange={(value) => {
-                setFirstName(value)
-                setFirstNameError(undefined)
-              }}
-              errorMessage={firstNameError}
+              onChange={setFirstName}
+              errorMessage={
+                flagged.firstName ? SIGNUP_ERRORS.firstName : undefined
+              }
             />
             <AuthTextField
-              label="Email*"
+              label={SIGNUP.emailLabel}
               type="email"
               autoComplete="email"
-              placeholder="jean.dev@gmail.com"
+              placeholder={SIGNUP.emailPlaceholder}
               value={email}
               onChange={(value) => {
                 setEmail(value)
-                setEmailError(undefined)
+                setEmailServerError(undefined)
               }}
-              errorMessage={emailError}
+              errorMessage={
+                emailServerError ??
+                (flagged.email ? SIGNUP_ERRORS.email : undefined)
+              }
             />
             <AuthTextField
-              label="Mot de passe*"
+              label={SIGNUP.passwordLabel}
               type="password"
               autoComplete="new-password"
               value={password}
-              onChange={(value) => {
-                setPassword(value)
-                setPasswordError(undefined)
-              }}
-              errorMessage={passwordError}
+              onChange={setPassword}
+              errorMessage={
+                flagged.password ? SIGNUP_ERRORS.password : undefined
+              }
             />
             {formError && (
               <p className="w-full text-center text-xs text-kommit-error">
@@ -135,8 +134,10 @@ export default function SignupPage() {
               </p>
             )}
             <AuthSubmitButton
-              label="Créer un compte"
-              disabled={!isFilled || signupMutation.isPending}
+              label={SIGNUP.submit}
+              loadingLabel={SIGNUP.submitLoading}
+              isLoading={signupMutation.isPending}
+              disabled={isAuthSubmitDisabled(isFilled, signupMutation.isPending)}
             />
           </div>
         </AuthCard>

@@ -1,17 +1,13 @@
 import type { ApiError, Session, SessionUser } from '@/types/apiContract'
 
-// Endpoints fournis par Better Auth (montés sur /api/auth/*, cf. apiContract.ts).
-// Le back ré-emballe ses erreurs en ApiError { code, message } avec un statut HTTP
-// cohérent — on lit donc directement le corps JSON en cas d'échec.
+// Le back ré-emballe les erreurs de Better Auth en ApiError, d'où la lecture directe du corps JSON.
 
+// `error: null` = le serveur n'a pas répondu, il n'y a donc aucune ApiError à
+// afficher. KOM-07 ne couvre pas ce cas (il relève de RM18/RM19), et on n'invente
+// pas de message : l'appelant ne montre rien et rend la main à l'utilisateur.
 export type AuthApiResult =
   | { ok: true; user: SessionUser }
-  | { ok: false; error: ApiError }
-
-const NETWORK_ERROR: ApiError = {
-  code: 'INTERNAL_ERROR',
-  message: 'Impossible de contacter le serveur. Vérifie ta connexion et réessaie.',
-}
+  | { ok: false; error: ApiError | null }
 
 async function postAuth(
   baseUrl: string,
@@ -28,7 +24,7 @@ async function postAuth(
       body: JSON.stringify(body),
     })
   } catch {
-    return { ok: false, error: NETWORK_ERROR }
+    return { ok: false, error: null }
   }
 
   const payload = await response.json().catch(() => null)
@@ -62,14 +58,21 @@ export function signIn(
   return postAuth(baseUrl, '/api/auth/sign-in/email', body, fetchImpl)
 }
 
+// Lève quand le serveur n'a pas fermé la session. Sans ça, un 500 passait pour un
+// succès : l'appelant nettoyait son affichage alors que le cookie était toujours
+// valide, et l'utilisateur restait connecté sans le savoir.
 export async function signOut(
   baseUrl: string,
   fetchImpl: typeof fetch = fetch
 ): Promise<void> {
-  await fetchImpl(`${baseUrl}/api/auth/sign-out`, {
+  const response = await fetchImpl(`${baseUrl}/api/auth/sign-out`, {
     method: 'POST',
     credentials: 'include',
   })
+
+  if (!response.ok) {
+    throw new Error(`Déconnexion refusée par le serveur (${response.status})`)
+  }
 }
 
 export async function getSession(

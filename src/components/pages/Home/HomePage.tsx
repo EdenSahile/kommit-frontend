@@ -1,15 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { LogOutIcon } from 'lucide-react'
 import Navbar from '@/components/ui/Navbar'
 import AuthNavButton from '@/components/ui/AuthNavButton'
+import SignOutButton from '@/components/ui/SignOutButton'
 import Footer from '@/components/ui/Footer'
 import { toast } from '@/components/ui/toast'
-import { getSession, signOut } from '@/logic/auth/authApi/authApi'
+import { NAVBAR } from '@/data/layout'
+import { HOME_AUTHENTICATED, HOME_VISITOR } from '@/data/home'
+import { homeTitleFor } from '@/logic/auth/homeTitle/homeTitle'
+import { getSession, signOut } from '@/lib/api/auth'
 import {
-  ARRIVAL_FLAG_KEY,
   arrivalToastFor,
-  type ArrivalFlag,
+  consumeArrivalFlag,
 } from '@/logic/auth/arrivalToast/arrivalToast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
@@ -22,25 +24,35 @@ export default function HomePage() {
     queryFn: () => getSession(API_BASE_URL),
   })
 
+  // La déconnexion est silencieuse (RM5) : le toast d'arrivée encore à l'écran
+  // doit partir avec la session, sinon il survit à l'état connecté qui l'a produit.
+  const arrivalToastId = useRef<string | null>(null)
+
   const signOutMutation = useMutation({
     mutationFn: () => signOut(API_BASE_URL),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['session'] }),
+    onSuccess: () => {
+      if (arrivalToastId.current) {
+        toast.close(arrivalToastId.current)
+        arrivalToastId.current = null
+      }
+      queryClient.invalidateQueries({ queryKey: ['session'] })
+    },
   })
 
   const session = sessionQuery.data
   const isAuthenticated = Boolean(session)
   const firstName = session?.user.name
   const isSessionResolved = !sessionQuery.isPending
+  const homeTitle = homeTitleFor(firstName ?? '')
 
   useEffect(() => {
     if (!session) return
 
-    const flag = sessionStorage.getItem(ARRIVAL_FLAG_KEY) as ArrivalFlag | null
-    sessionStorage.removeItem(ARRIVAL_FLAG_KEY)
+    const flag = consumeArrivalFlag(sessionStorage)
 
     const arrivalToast = arrivalToastFor(flag, session.user.name)
     if (arrivalToast) {
-      toast.add({
+      arrivalToastId.current = toast.add({
         type: arrivalToast.type,
         title: arrivalToast.message,
         description: '',
@@ -53,47 +65,45 @@ export default function HomePage() {
       <Navbar>
         {isSessionResolved &&
           (isAuthenticated ? (
-            <button
-              type="button"
+            <SignOutButton
               onClick={() => signOutMutation.mutate()}
-              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-base font-semibold text-kommit-grey-blue"
-            >
-              <LogOutIcon className="size-6" />
-              Se déconnecter
-            </button>
+              disabled={signOutMutation.isPending}
+            />
           ) : (
             <>
               <AuthNavButton to="/signin" variant="secondary">
-                Se connecter
+                {NAVBAR.signIn}
               </AuthNavButton>
               <AuthNavButton to="/signup" variant="primary">
-                Créer un compte
+                {NAVBAR.signUp}
               </AuthNavButton>
             </>
           ))}
       </Navbar>
 
-      <section className="flex w-full flex-col items-center px-[200px] py-8">
+      <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-6 py-8 md:px-12 lg:px-[200px]">
         <div className="flex flex-col items-center gap-3 py-7 text-center">
           {isSessionResolved &&
             (isAuthenticated ? (
               <>
-                <h1 className="text-5xl font-bold text-kommit-heading">
-                  Quoi de neuf aujourd&apos;hui,{' '}
-                  <span className="text-kommit-accent">{firstName} ?</span>
+                <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
+                  {homeTitle.lead}
+                  <span className="text-kommit-accent">{homeTitle.accent}</span>
                 </h1>
                 <p className="max-w-[504px] text-lg text-kommit-grey-blue">
-                  Renseigne ton daily du jour ci-dessous.
+                  {HOME_AUTHENTICATED.subtitle}
                 </p>
               </>
             ) : (
               <>
-                <h1 className="text-5xl font-bold text-kommit-heading">
-                  Prêt(e) pour ton{' '}
-                  <span className="text-kommit-accent">daily standup ?</span>
+                <h1 className="text-3xl font-bold text-kommit-heading sm:text-5xl">
+                  {HOME_VISITOR.titleStart}
+                  <span className="text-kommit-accent">
+                    {HOME_VISITOR.titleAccent}
+                  </span>
                 </h1>
                 <p className="max-w-[544px] text-lg text-kommit-grey-blue">
-                  Track tes résultats pour que les jours ne se ressemblent pas.
+                  {HOME_VISITOR.subtitle}
                 </p>
               </>
             ))}
