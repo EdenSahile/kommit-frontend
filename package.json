@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:run": "vitest run",
+    "lint": "eslint .",
     "test:e2e": "playwright test",
     "test:e2e:headed": "HEADED=1 playwright test"
   },
