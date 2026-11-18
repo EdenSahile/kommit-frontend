@@ -70,9 +70,30 @@ par une 2ᵉ session Claude ouverte sur le même repo.
 Lancer `pnpm test:e2e:qa:seq`. Ce script charge `.env.qa`, donc la suite tape le lien
 déployé et non `localhost`.
 
-Relever chaque test OK et KO depuis la sortie. Un test e2e rouge alors que l'app marche est
-un **faux négatif** : il va dans le rapport sous « Faux négatifs à corriger par
-l'utilisateur », et **interdiction de le corriger** (RM5).
+Relever chaque test OK et KO depuis la sortie.
+
+### 4 bis. Un test rouge ne se classe pas « faux négatif » sans preuve
+
+Un test e2e rouge alors que l'app marche est un **faux négatif** : il va dans le rapport
+sous « Faux négatifs à corriger par l'utilisateur », et **interdiction de le corriger**
+(RM5).
+
+Mais ce classement ne se décide pas sur une intuition, parce qu'il a une conséquence : un
+faux négatif ne compte pas comme un KO, donc il n'arrête pas le workflow (RM9). S'en servir
+librement permettrait de requalifier toute une passe 1 rouge et de continuer comme si de
+rien n'était. La règle :
+
+- **Un test rouge compte comme un KO par défaut.** C'est le cas qui ne demande aucune preuve.
+- **Il ne devient un faux négatif qu'à 2 conditions réunies** : la cause de l'échec est
+  identifiée et extérieure à l'app (un refus du serveur sur la cadence des appels, une
+  coupure réseau, une donnée laissée par un run précédent), **et** la règle métier que le
+  test couvrait a été revérifiée à la main dans le navigateur, avec une capture. Sans cette
+  revérification, la règle n'a pas été testée du tout : le test rouge reste un KO.
+- **Au-delà de 3 tests rouges**, ne pas les revérifier un par un : le budget de 20 minutes
+  n'y suffit pas, et un échec massif venant d'une cause commune veut dire que
+  l'environnement ne permet pas de faire un QA en l'état. S'arrêter après la passe 1,
+  l'écrire en tête du rapport (« environnement inapte au QA »), nommer la cause commune, et
+  ne pas faire la passe 2.
 
 ### 5. Passe 1, les tests manquants (RM8)
 
@@ -106,6 +127,9 @@ copier dans `testing/qa-reports/captures/` sous le nom `passe1-<nom-du-test>.png
 
 Dans les 2 cas, les résultats de la passe 1 vont dans le rapport.
 
+Un faux négatif établi selon l'étape 4 bis n'est pas un KO et n'arrête donc pas le
+workflow. Un test rouge qui n'a pas passé ces conditions en est un.
+
 ### 9. Passe 2, l'exploration (RM10, RM11)
 
 Lancer l'agent `qa-explorer` en lui donnant :
@@ -121,6 +145,19 @@ Un KO n'arrête pas la passe 2 : elle va jusqu'au bout de ses cas (RM11).
 
 Écrire `testing/qa-reports/qa-<US>-<AAAA-MM-JJ>.md` selon le gabarit ci-dessous. Les 3
 tableaux de gravité y figurent **même vides**.
+
+**Le verdict se calcule, il ne s'apprécie pas.** Il ne dépend que du tableau des ⛔, et
+d'aucun autre. Les 4 formulations possibles, à reprendre telles quelles :
+
+| Situation | Verdict à écrire |
+|---|---|
+| 0 ⛔, les 2 passes sont allées au bout | `déployable` |
+| Au moins 1 ⛔ | `non déployable, bloqué par N KO bloquants` |
+| Le workflow s'est arrêté avant la fin (KO en passe 1, environnement inapte, budget atteint) | `incomplet, <ce qui n'a pas été testé>` |
+| 0 ⛔ mais des ⚠️ ou des 💡 | `déployable, avec N points à reprendre` |
+
+Un ⚠️ ou un 💡 ne rend jamais « non déployable » : c'est le sens même du classement par
+gravité. Écrire « non déployable » en ajoutant « aucun KO bloquant » est une contradiction.
 
 ### 11. Désactiver le garde-fou
 
@@ -183,7 +220,7 @@ minutes atteint ». Ce qui n'a pas été testé est listé nommément.
 - Passe 1 (tests scriptés) : X OK, Y KO
 - Passe 2 (exploration) : X OK, Y KO
 - Début : HH:MM, fin : HH:MM, durée : Xm Ys
-- Verdict : <déployable, ou bloqué par N KO bloquants>
+- Verdict : <une des 4 formulations du tableau de l'étape 10>
 
 La gravité de chaque KO est proposée par le workflow. Relire et corriger si besoin.
 
@@ -249,11 +286,11 @@ La gravité de chaque KO est proposée par le workflow. Relire et corriger si be
 | RM2 | Prérequis (`.env.qa`, jamais `localhost`) et étape 1 (groupement par US) |
 | RM3 | Étapes 10 et 12, et le gabarit du rapport |
 | RM4 | Section « Le budget de 20 minutes », et la limite de 15 cas passée à `qa-explorer` |
-| RM5 | Garde-fou 1, le hook `guard-e2e-qa.sh`, et l'étape 4 pour les faux négatifs |
+| RM5 | Garde-fou 1, le hook `guard-e2e-qa.sh`, et l'étape 4 bis pour les faux négatifs |
 | RM6 | Garde-fou 2, repris dans `qa-explorer` |
 | RM7 | Étape 4 |
 | RM8 | Étape 5 |
-| RM9 | Étape 8 |
+| RM9 | Étapes 8 et 4 bis (un test rouge non revérifié compte comme un KO) |
 | RM10 | Étape 9 |
 | RM11 | Étape 9 |
 | RM12 | Le premier lancement, sur l'US1 Authentification |
