@@ -204,8 +204,10 @@ sécurité, pas le nettoyage.
 ### 12. Proposer la suppression des comptes de test (RM3)
 
 Les tests e2e créent des comptes avec des emails en `*@test.dev` (`uniqueEmail()` dans
-`e2e/support/accounts.ts`). La base de DEV étant partagée avec le local, ils se suppriment à
-la fin.
+`e2e/helpers.ts`). Comme le QA tape le déploiement, ces comptes atterrissent dans la base du
+déploiement DEV, la branche Neon `dev-en-ligne`, et non dans `dev-local` qui sert la machine
+du développeur. Les supprimer à la fin évite d'accumuler des faux comptes dans la base dont
+se sert l'app en ligne.
 
 **D'abord montrer, ensuite supprimer.** Les 2 commandes prennent l'heure de début du QA et
 ne voient que les comptes créés après, pour ne jamais toucher un compte antérieur. La date

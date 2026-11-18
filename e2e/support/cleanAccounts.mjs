@@ -1,6 +1,7 @@
 // Liste ou supprime les comptes de test créés pendant une session de QA (/run-qa).
-// La base de DEV est partagée avec le local : le filtre se limite aux emails de test
-// créés APRÈS l'heure de début du QA, pour ne jamais toucher un compte antérieur.
+// Vise la base du déploiement DEV (branche Neon dev-en-ligne), jamais celle du local.
+// Le filtre se limite aux emails de test créés APRÈS l'heure de début du QA, pour ne
+// jamais toucher un compte antérieur.
 //
 // Lancé par les scripts pnpm qa:accounts:list et qa:accounts:delete, qui chargent le
 // fichier d'environnement du QA. Un appel direct à node sans ce fichier n'a pas l'URL.
