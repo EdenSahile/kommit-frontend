@@ -101,11 +101,33 @@ Croiser les RM relevées à l'étape 2 avec les tests e2e existants (`git ls-fil
 chaque RM non couverte **et déclenchable depuis l'app**, écrire un **nouveau** fichier sous
 `e2e/`, jamais une ligne dans un fichier existant.
 
-Suivre les helpers de `e2e/support/` (`newAccount`, `uniqueEmail`, `createAccount`,
-`signInThroughApi`) et la rule `tests-arrange-act-assert.md` : les 3 phases séparées par une
+Reprendre les helpers de **`e2e/helpers.ts`**, que les specs existantes importent toutes en
+relatif (`from './helpers'`) : `uniqueEmail(prefixe)`, `fieldByLabel(page, libelle)`,
+`createAccountViaApi`, `signUpViaUi`, `signInViaUi`. Ne pas partir sur `e2e/support/`, qui
+sert à autre chose : l'accès direct à la base, pour les états qu'on ne peut pas provoquer
+depuis l'app. Et suivre la rule `tests-arrange-act-assert.md` : les phases séparées par une
 ligne vide, les variables nommées par leur contenu.
 
+L'import relatif est voulu ici : `e2e/` est hors de `src/`, donc hors de portée de l'alias
+`@/` (rule `imports.md`).
+
 Puis relancer `pnpm test:e2e:qa:seq`.
+
+### 5 bis. Une RM n'est couverte que si le test l'atteint vraiment
+
+Un test ne compte pour une RM que si **ses assertions portent sur cette RM**. Écrire un
+test, le nommer d'après une RM et le compter comme couvert alors qu'il vérifie autre chose
+fait croire au rapport qu'une règle est testée quand elle ne l'est pas. C'est le pire
+résultat possible pour un QA : un trou présenté comme une couverture.
+
+Le piège le plus fréquent : **une RM que l'interface rend inatteignable, parce qu'une autre
+RM bloque en amont.** Exemple vécu sur l'US1. RM20 dit que le serveur refuse un prénom qui
+ne contient que des espaces. Mais RM33 grise le bouton de création dans ce cas précis, donc
+la requête ne part jamais et le refus du serveur ne peut pas se déclencher depuis l'app.
+
+Dans ce cas, la RM ne se classe pas « couverte », elle va dans « Hors périmètre UI » à
+l'étape 6, avec sa raison : « inatteignable depuis l'interface, RM33 grise le bouton
+avant ». Le test déjà écrit, lui, se renomme d'après ce qu'il vérifie réellement.
 
 ### 6. Noter ce qui est hors périmètre
 
