@@ -67,10 +67,23 @@ Le `filename` de `browser_take_screenshot` est relatif au dossier de sortie du s
 **pas au repo** : la capture n'atterrit donc pas dans le projet. En 2 temps :
 
 1. Prendre la capture, et relever le chemin que l'outil renvoie.
-2. La déplacer par `Bash` vers `<dossier de captures reçu en entrée>/passe2-<zone>-<cas>.png`,
-   en créant le dossier au besoin (`mkdir -p`).
+2. La **déplacer** par `Bash` avec `mv`, jamais `cp`, vers
+   `<dossier de captures reçu en entrée>/passe2-<zone>-<cas>.png`, en créant le dossier au
+   besoin (`mkdir -p`).
 
 Le chemin rendu au parent est celui d'arrivée, dans le repo, jamais celui du serveur MCP.
+
+**Avant de rendre la main, vérifier qu'il ne traîne aucune capture ailleurs.** Un premier
+lancement en a laissé 16 à la racine du repo, en double de celles du dossier : selon le
+chemin demandé, l'outil écrit parfois dans le dossier courant au lieu du sien. Donc, en
+dernière étape :
+
+```bash
+ls passe2-*.png 2>/dev/null && echo "des captures traînent à la racine"
+```
+
+Si des fichiers apparaissent, les déplacer dans le dossier de captures s'ils sont uniques,
+les supprimer s'ils font doublon, et ne jamais laisser la racine du repo sale.
 
 ## Choix de la gravité
 
