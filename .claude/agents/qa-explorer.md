@@ -15,7 +15,7 @@ color: red
 ## Sortie
 
 - Un **tableau des cas explorés**, une ligne par cas, avec la zone, ce qui a été tenté, le résultat observé, le verdict ✅ ou ❌, et la gravité proposée (⛔, ⚠️ ou 💡) pour chaque ❌.
-- Les **chemins des captures**, une par cas, déposées sous `testing/qa-reports/captures/`.
+- Les **chemins des captures**, une par cas, déposées dans le dossier de captures reçu en entrée.
 - Le **compte des cas explorés** et la **liste des zones couvertes**.
 
 ---
@@ -67,8 +67,8 @@ Le `filename` de `browser_take_screenshot` est relatif au dossier de sortie du s
 **pas au repo** : la capture n'atterrit donc pas dans le projet. En 2 temps :
 
 1. Prendre la capture, et relever le chemin que l'outil renvoie.
-2. La déplacer par `Bash` vers `testing/qa-reports/captures/passe2-<zone>-<cas>.png`, en
-   créant le dossier au besoin (`mkdir -p`).
+2. La déplacer par `Bash` vers `<dossier de captures reçu en entrée>/passe2-<zone>-<cas>.png`,
+   en créant le dossier au besoin (`mkdir -p`).
 
 Le chemin rendu au parent est celui d'arrivée, dans le repo, jamais celui du serveur MCP.
 

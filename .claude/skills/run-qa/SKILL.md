@@ -9,7 +9,7 @@ description: Teste seul une US entière sur le lien de déploiement du frontend 
 
 ## Sortie
 
-- Le **chemin du rapport QA**, sous `testing/qa-reports/qa-<US>-<AAAA-MM-JJ>.md`.
+- Le **chemin du rapport QA**, sous `testing/qa-reports/qa-<US>-<AAAA-MM-JJ>-<HHhMM>.md`.
 - Un **bilan affiché dans la conversation** portant le nombre d'OK et de KO par passe, la durée totale, et la liste des KO bloquants.
 
 ---
@@ -140,7 +140,8 @@ appel direct à l'API.
 
 `screenshot: 'on'` est déjà actif dès que `QA_BASE_URL` est défini
 (`playwright.config.ts:18`), donc chaque test produit un PNG sous `test-results/`. Les
-copier dans `testing/qa-reports/captures/` sous le nom `passe1-<nom-du-test>.png`.
+copier dans le dossier du lancement, `testing/qa-reports/captures/<AAAA-MM-JJ>-<HHhMM>/`,
+sous le nom `passe1-<nom-du-test>.png`.
 
 ### 8. Décider de la suite (RM9)
 
@@ -159,14 +160,22 @@ Lancer l'agent `qa-explorer` en lui donnant :
 - le lien déployé (`QA_BASE_URL`) ;
 - les RM de l'US, pour qu'il ne rejoue pas ce que la passe 1 a déjà vérifié ;
 - les **zones de l'app**, déduites des routes déclarées dans `src/App.tsx` ;
+- le **dossier de captures du lancement**, `testing/qa-reports/captures/<AAAA-MM-JJ>-<HHhMM>/` ;
 - les **minutes restantes** sur le budget de 20 minutes.
 
 Un KO n'arrête pas la passe 2 : elle va jusqu'au bout de ses cas (RM11).
 
 ### 10. Écrire le rapport (RM3)
 
-Écrire `testing/qa-reports/qa-<US>-<AAAA-MM-JJ>.md` selon le gabarit ci-dessous. Les 3
-tableaux de gravité y figurent **même vides**.
+Écrire `testing/qa-reports/qa-<US>-<AAAA-MM-JJ>-<HHhMM>.md` selon le gabarit ci-dessous,
+avec l'heure de début du QA. Les 3 tableaux de gravité y figurent **même vides**.
+
+**L'heure fait partie du nom, et ce n'est pas un détail** : 2 QA lancés le même jour sur la
+même US écraseraient sinon le rapport du premier. Si un fichier de ce nom existe déjà,
+ne pas l'écraser : s'arrêter et le signaler.
+
+Même règle pour les captures : les déposer sous
+`testing/qa-reports/captures/<AAAA-MM-JJ>-<HHhMM>/`, un dossier par lancement.
 
 **Le verdict se calcule, il ne s'apprécie pas.** Il ne dépend que du tableau des ⛔, et
 d'aucun autre. Les 4 formulations possibles, à reprendre telles quelles :
@@ -235,7 +244,7 @@ minutes atteint ». Ce qui n'a pas été testé est listé nommément.
 ## Gabarit du rapport
 
 ```markdown
-# Rapport QA, <US> <Nom de la feature>, <AAAA-MM-JJ>
+# Rapport QA, <US> <Nom de la feature>, <AAAA-MM-JJ> <HHhMM>
 
 ## Bilan
 
