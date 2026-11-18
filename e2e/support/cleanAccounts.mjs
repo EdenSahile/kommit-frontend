@@ -16,8 +16,11 @@ if (mode !== '--list' && mode !== '--delete') {
   process.exit(1)
 }
 
-if (!depuis || Number.isNaN(Date.parse(depuis))) {
-  console.error(`Date de début illisible : ${JSON.stringify(depuis)}. Attendu une date ISO, par exemple 2026-11-18T13:00:00Z.`)
+// Format strict : Date.parse accepte "2000", qui viserait toute l'histoire de la base.
+const DATE_ISO_COMPLETE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+
+if (!depuis || !DATE_ISO_COMPLETE.test(depuis) || Number.isNaN(Date.parse(depuis))) {
+  console.error(`Date de début refusée : ${JSON.stringify(depuis)}. Attendu une date ISO complète avec fuseau, par exemple 2026-11-18T13:00:00Z (obtenue avec date -u +%Y-%m-%dT%H:%M:%SZ).`)
   process.exit(1)
 }
 
@@ -27,13 +30,16 @@ if (!process.env.E2E_DATABASE_URL) {
 }
 
 const client = new pg.Client({ connectionString: process.env.E2E_DATABASE_URL })
-const parametres = [depuis, EMAILS_DE_TEST]
-const comptesVises = 'SELECT "id" FROM "user" WHERE "createdAt" >= $1 AND "email" LIKE $2'
+
+// user.createdAt est un TIMESTAMP(3) SANS fuseau : Postgres ignorerait l'offset du texte
+// reçu. On envoie donc l'instant converti en UTC, et on compare en timestamp nu.
+const parametres = [new Date(depuis).toISOString(), EMAILS_DE_TEST]
+const FENETRE = '"createdAt" >= $1::timestamp AND "email" LIKE $2'
 
 await client.connect()
 try {
   const { rows } = await client.query(
-    `SELECT "email", "createdAt" FROM "user" WHERE "createdAt" >= $1 AND "email" LIKE $2 ORDER BY "createdAt"`,
+    `SELECT "email", "createdAt" FROM "user" WHERE ${FENETRE} ORDER BY "createdAt"`,
     parametres,
   )
 
@@ -44,10 +50,9 @@ try {
   }
 
   if (mode === '--delete') {
-    // session et account pointent vers user : ils partent avant.
-    await client.query(`DELETE FROM "session" WHERE "userId" IN (${comptesVises})`, parametres)
-    await client.query(`DELETE FROM "account" WHERE "userId" IN (${comptesVises})`, parametres)
-    const { rowCount } = await client.query(`DELETE FROM "user" WHERE "id" IN (${comptesVises})`, parametres)
+    // session et account référencent user en ON DELETE CASCADE : une seule suppression
+    // suffit, et elle est atomique à elle seule.
+    const { rowCount } = await client.query(`DELETE FROM "user" WHERE ${FENETRE}`, parametres)
     console.log(`${rowCount} compte(s) de test supprimé(s).`)
   }
 } finally {

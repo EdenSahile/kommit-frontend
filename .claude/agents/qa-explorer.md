@@ -60,9 +60,17 @@ une donnée perdue.
 ## Preuve
 
 Chaque cas porte **une capture**, prise avec `browser_take_screenshot` au moment où le
-résultat est à l'écran, déposée sous `testing/qa-reports/captures/` sous un nom parlant de
-la forme `passe2-<zone>-<cas>.png`. Un cas sans capture ne compte pas : le rapport QA doit
-pouvoir montrer ce qui a été vu.
+résultat est à l'écran. Un cas sans capture ne compte pas : le rapport QA doit pouvoir
+montrer ce qui a été vu.
+
+Le `filename` de `browser_take_screenshot` est relatif au dossier de sortie du serveur MCP,
+**pas au repo** : la capture n'atterrit donc pas dans le projet. En 2 temps :
+
+1. Prendre la capture, et relever le chemin que l'outil renvoie.
+2. La déplacer par `Bash` vers `testing/qa-reports/captures/passe2-<zone>-<cas>.png`, en
+   créant le dossier au besoin (`mkdir -p`).
+
+Le chemin rendu au parent est celui d'arrivée, dans le repo, jamais celui du serveur MCP.
 
 ## Choix de la gravité
 

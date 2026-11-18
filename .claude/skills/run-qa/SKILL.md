@@ -54,11 +54,16 @@ appel direct à l'API sont hors périmètre (voir l'étape 6).
 
 ### 3. Activer le garde-fou
 
-`touch /tmp/qa-session-active`, **avant** de lancer la passe 1.
+```bash
+touch "$(git rev-parse --absolute-git-dir)/qa-session-active"
+```
 
-Ce marqueur active le hook `.claude/hooks/guard-e2e-qa.sh`, qui refuse toute modification
-d'un test e2e tracké par git, y compris venant des agents que ce skill lance (RM5). Les
-nouveaux fichiers e2e, non trackés, restent libres (RM8).
+À lancer **avant** la passe 1. Ce marqueur active le hook `.claude/hooks/guard-e2e-qa.sh`,
+qui refuse toute modification d'un test e2e tracké par git, y compris venant des agents que
+ce skill lance (RM5). Les nouveaux fichiers e2e, non trackés, restent libres (RM8).
+
+Le marqueur vit dans le dossier `.git` : propre à ce clone, hors du suivi git, et visible
+par une 2ᵉ session Claude ouverte sur le même repo.
 
 ### 4. Passe 1, les tests déjà écrits (RM7)
 
@@ -119,10 +124,14 @@ tableaux de gravité y figurent **même vides**.
 
 ### 11. Désactiver le garde-fou
 
-`rm -f /tmp/qa-session-active`, y compris quand le workflow s'arrête en cours de route (KO
-en passe 1, budget dépassé, erreur). Un marqueur oublié bloquerait les modifications d'e2e
-dans les sessions suivantes. Le hook l'ignore de lui-même au bout de 60 minutes, mais ce
-n'est qu'un filet de sécurité, pas le nettoyage.
+```bash
+rm -f "$(git rev-parse --absolute-git-dir)/qa-session-active"
+```
+
+À lancer y compris quand le workflow s'arrête en cours de route (KO en passe 1, budget
+dépassé, erreur). Un marqueur oublié bloquerait les modifications d'e2e dans les sessions
+suivantes. Le hook l'ignore de lui-même au bout de 60 minutes, mais ce n'est qu'un filet de
+sécurité, pas le nettoyage.
 
 ### 12. Proposer la suppression des comptes de test (RM3)
 
@@ -130,14 +139,19 @@ Les tests e2e créent des comptes avec des emails en `*@test.dev` (`uniqueEmail(
 `e2e/support/accounts.ts`). La base de DEV étant partagée avec le local, ils se suppriment à
 la fin.
 
-**D'abord montrer, ensuite supprimer.** Les 2 commandes prennent l'heure de début du QA en
-date ISO et ne voient que les comptes créés après, pour ne jamais toucher un compte
-antérieur :
+**D'abord montrer, ensuite supprimer.** Les 2 commandes prennent l'heure de début du QA et
+ne voient que les comptes créés après, pour ne jamais toucher un compte antérieur. La date
+s'obtient en UTC, au format complet, **au tout début du QA** :
 
 ```bash
+date -u +%Y-%m-%dT%H:%M:%SZ          # à garder dès l'étape 1, c'est <DEBUT_ISO>
 pnpm qa:accounts:list <DEBUT_ISO>     # montre les comptes visés
 pnpm qa:accounts:delete <DEBUT_ISO>   # supprime, après confirmation SEULEMENT
 ```
+
+Toute autre forme de date est refusée par le script : une date partielle comme `2000`
+viserait toute l'histoire de la base, y compris les comptes de test d'un développeur en
+local.
 
 Lancer la liste, afficher le tableau obtenu, **demander confirmation à l'utilisateur**, et
 seulement en cas de oui lancer la suppression. Un « non » laisse les comptes en place et le
