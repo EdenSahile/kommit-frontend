@@ -65,6 +65,23 @@ ce skill lance (RM5). Les nouveaux fichiers e2e, non trackés, restent libres (R
 Le marqueur vit dans le dossier `.git` : propre à ce clone, hors du suivi git, et visible
 par une 2ᵉ session Claude ouverte sur le même repo.
 
+### 3 bis. Réveiller le backend
+
+```bash
+pnpm qa:wake
+```
+
+À lancer **avant** la passe 1, et attendre qu'il réponde.
+
+Le backend de DEV vit sur l'offre gratuite de Render : il s'endort après 15 minutes sans
+requête et met jusqu'à une minute à repartir. Mesuré le 2026-11-20 : 51 secondes. Sans ce
+réveil, les premiers tests de la passe 1 échouent sur un backend absent. Ces échecs
+n'apprennent rien sur l'app, et ils ont déjà fait passer un QA entier pour inexploitable.
+
+Si la commande rend la main en erreur, **ne pas lancer la passe 1** : le backend est en
+panne ou en cours de déploiement, et tous les tests seraient rouges pour cette seule raison.
+S'arrêter et le signaler à l'utilisateur.
+
 ### 4. Passe 1, les tests déjà écrits (RM7)
 
 Lancer `pnpm test:e2e:qa:seq`. Ce script charge `.env.qa`, donc la suite tape le lien
