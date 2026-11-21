@@ -7,14 +7,27 @@ description: Assiste la mise en place du déploiement continu du frontend sur Ve
 
 - La **cible** (Vercel) et la **branche déployée** (`dev`), depuis le ticket CD ou la demande directe.
 - L'**URL du backend déployé** (l'API que le front doit appeler en prod, pas `localhost`).
-- Le **repo courant** : une SPA Vite + React Router, buildée avec `pnpm build`.
+- Le **repo courant** : une SPA Vite + React Router, buildée avec `pnpm build`. En particulier son `package.json` pour le script `build`, son `.nvmrc` pour la version de Node, et son `.env.example` pour le nom exact de chaque variable.
+- Optionnel : un **ticket de CD** (lien ou ID). S'il est donné, le skill suit ses règles métier.
 
 ## Sortie
 
-- Un **déploiement continu fonctionnel, mis en place avec l'utilisateur** : à chaque merge sur `dev`, Vercel build et déploie, et l'app déployée **s'affiche ET se connecte** (auth cross-origin qui marche), pas seulement une page qui charge.
+- Un fichier de config **`vercel.json`** à la racine du repo, déclarant le build et la réécriture SPA.
+- L'**URL publique du frontend de DEV** (ex. `https://<nom-du-projet>.vercel.app`).
+- Un **déploiement continu fonctionnel, mis en place avec l'utilisateur** : à chaque merge sur la branche déployée, Vercel build et déploie, et l'app déployée **s'affiche ET se connecte** (auth cross-origin qui marche), pas seulement une page qui charge. La session tient d'une page à l'autre.
 - Un **plan d'ensemble en prose**, en trois sections (repo frontend / dashboard Vercel / blocage backend), qui donne la vue globale.
 - Une **liste de tâches `TaskCreate`** qui reprend ce plan, une tâche par action, cochée au fil de l'avancement.
 - La liste explicite de ce qui reste à faire **à la main dans le dashboard Vercel** (et côté backend).
+
+## Accompagner l'utilisateur jusqu'au bout
+
+Le skill ne lâche pas l'utilisateur avant la fin du ticket.
+
+1. **Au démarrage, une tâche par étape** avec `TaskCreate`, sans tâche pour les règles métier du ticket. Chaque tâche passe en `in_progress` quand on l'attaque, et en `completed` seulement après vérification.
+2. **Une étape à la fois** : annoncer l'étape, ce qu'elle sert à obtenir, et ce que l'utilisateur doit faire.
+3. **Chaque étape manuelle se termine par une question** (« C'est fait ? ») : ne pas passer à la suite sans réponse.
+4. **Vérifier soi-même quand c'est possible** : ne pas se contenter du « oui » de l'utilisateur (ex. après la saisie des variables, vérifier que le déploiement repart et que l'app répond).
+5. **Ne rendre la main qu'à la fin du ticket** : quand toutes les règles métier sont vérifiées, ou bloquées avec une raison claire.
 
 ---
 
