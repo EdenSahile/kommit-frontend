@@ -41,7 +41,7 @@ Le skill ne lâche pas l'utilisateur avant la fin du ticket.
 > { "env": { "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1" } }
 > ```
 >
-> La variable est lue au démarrage du process : il faut **relancer une session** pour qu'elle prenne. À défaut, restituer le plan en prose seul et le dire, plutôt que de simuler un suivi de tâches qui n'existe pas.
+> Vérifié le 21/11/2026 sur Claude Code 2.1.330 : le réglage prend **immédiatement**, les outils apparaissent dans la session déjà ouverte, sans redémarrage. Tant qu'ils manquent, restituer le plan en prose seul et le dire, plutôt que de simuler un suivi de tâches qui n'existe pas.
 
 ## Format de restitution — vue d'ensemble ET tâches cochables
 
