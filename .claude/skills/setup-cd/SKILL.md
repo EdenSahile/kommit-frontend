@@ -20,6 +20,16 @@ description: Assiste la mise en place du déploiement continu du frontend sur Ve
 
 > ⚠️ **Skill écrit de connaissance, pas encore éprouvé sur un vrai déploiement** (contrairement à `setup-ci`, prouvé bout en bout). À valider et corriger au premier branchement Vercel réel.
 
+> ⚠️ **Si `TaskCreate` n'existe pas, ne pas chercher un outil de remplacement, il n'y en a pas.** Depuis Claude Code **2.1.233**, les outils de todo (`TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`, et l'ancien `TodoWrite`) sont **coupés par défaut sur les modèles récents**. Ils sont toujours dans le binaire, simplement désactivés. Le message d'erreur est trompeur : il annonce « disabled for this session », ce qui laisse croire à un réglage de projet, alors qu'aucune config du repo n'est en cause.
+>
+> Le réglage, dans `~/.claude/settings.json` :
+>
+> ```json
+> { "env": { "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1" } }
+> ```
+>
+> La variable est lue au démarrage du process : il faut **relancer une session** pour qu'elle prenne. À défaut, restituer le plan en prose seul et le dire, plutôt que de simuler un suivi de tâches qui n'existe pas.
+
 ## Format de restitution — vue d'ensemble ET tâches cochables
 
 Restituer en **deux temps complémentaires**, jamais l'un sans l'autre. Le premier donne la cohérence et le « pourquoi » ; le second donne le suivi vivant en bas d'écran. Les garder alignés : même ordre, même découpage.
@@ -33,6 +43,26 @@ Restituer en **deux temps complémentaires**, jamais l'un sans l'autre. Le premi
 Ne pas numéroter deux fois de deux façons différentes : les sous-points d'une section de prose et les tâches doivent se correspondre un pour un, pour que l'utilisateur retrouve chaque tâche dans le plan.
 
 ## Comment
+
+### 0. Faire valider le nom et les valeurs, avant d'écrire
+
+Même format de question que pour chaque valeur (`AskUserQuestion`), même si une valeur a été trouvée, pour que l'utilisateur sache de quoi il est question :
+1. ce dont le skill a besoin, et à quoi ça sert, en 1 phrase ;
+2. la valeur trouvée, et où (ticket, `.env.example`, code), ou une valeur proposée si rien n'est trouvé ;
+3. « Je l'utilise ? », avec en options la valeur trouvée ou proposée, et une saisie libre. Le libellé de chaque option est la valeur complète (ex. l'URL entière), pas un raccourci.
+
+Dans cet ordre :
+1. **L'URL publique du frontend, dans un formulaire à part.** Poser exactement : « J'ai besoin de l'URL publique de ton frontend sur Vercel : c'est elle que le backend autorise dans ses origines. J'ai trouvé `<URL>` dans `<source>`. Je l'utilise ? ». Source, dans cet ordre :
+   1. les origines autorisées du backend, si le repo backend est accessible ;
+   2. le ticket ;
+   3. sinon, `https://<nom-du-repo>-<prénom>-dev.vercel.app`.
+
+   Le nom du projet Vercel est la partie avant `.vercel.app`. Attendre la réponse avant la suite : les questions suivantes affichent les vraies valeurs, jamais un repère comme `<nom>`.
+2. **Les variables non secrètes de `.env.example`** (ex. `<URL_DU_BACKEND>`), avec l'URL réelle du backend en ligne.
+
+**Ne jamais lire `.env`** : il peut contenir des secrets. Les valeurs trouvées viennent seulement du ticket, de `.env.example` ou du code.
+
+**Une URL prévue est vérifiée à la création.** L'URL du frontend se déduit du nom, mais Vercel la change si le nom est déjà pris. Après la création, comparer l'URL réelle avec celle prévue. Si elle diffère, prévenir l'utilisateur de mettre à jour les origines autorisées du backend.
 
 ### 1. Brancher le service Vercel
 
